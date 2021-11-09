@@ -11,6 +11,8 @@
 #include <iostream>
 
 
+std::string example = "HTTP/1.1 200 OK\r\nServer: nginx\r\nDate: Sat, 08 Mar 2014 22:29:53 GMT\r\nContent-Type: text/html\r\nContent-Length: 139\r\nConnection: keep-alive\r\nKeep-Alive: timeout=25\r\n\r\n<html><head><title>302 Found</title></head><body bgcolor=\"white\"><center><h1>302 Found</h1></center><hr><center>nginx</center</body></html>";
+
 class Server{
     private:
     Server(){}
