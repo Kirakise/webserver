@@ -70,6 +70,7 @@ class Server{
                 fcntl(sock, F_SETFL, O_NONBLOCK);
                 clients.insert(sock);
             }
+            start:
             for(std::set<int>::iterator it = clients.begin(); it != clients.end(); it++)
             {
                 if(FD_ISSET(*it, &readset))
@@ -81,7 +82,7 @@ class Server{
                     {
                         close(*it);
                         clients.erase(*it);
-                        continue;
+                        goto start;
                     }
                     std::cout << buffer;
                 // Тут парсить надо
@@ -90,6 +91,7 @@ class Server{
                 }
             }
         }
+        close(sockfd);
         return (0);
     }
 

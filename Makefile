@@ -1,6 +1,6 @@
 SRCS = ./srcs/main.cpp
 OBJS	= $(SRCS:.cpp=.o)
-CFLAGS = -Iincludes/ -g
+CFLAGS = -Iincludes/ -g -MMD
 CC = clang++
 NAME = webserver
 
