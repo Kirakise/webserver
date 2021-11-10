@@ -4,6 +4,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <utility>
 
 
 class Parser{
@@ -13,21 +14,25 @@ class Parser{
         Parser(std::string request);
         ~Parser();
 
-        std::string                         request;
+        // request fields:
 
-        std::string                         method;
-        std::string                          version;
-   
-        std::map <std::string, std::string> headers;
-        std::string                         path;
+        std::string                                        request;
+        std::string                                        method;
+        std::string                                        version;
+        std::string                                        path;
+        std::vector<std::pair<std::string, std::string> >  headers;
+        std::string                                        body;
+        bool                                               bad_responce;
 
+        // utils fields:
 
         std::vector<std::string>            lines;
-        std::string                         splited_req[2];
-    //  std::string                         content; // nahui
-        void parse();
-        // void parsePath(std::string request);
-        void parseHeaders(std::string *split_req);
+        std::string                         splited_req;
+
+        void parseStartLine();
+        void parseHeaders();
         void parseLines();
         void splitRequest();
+        void parseAll();
+
 };

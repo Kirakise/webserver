@@ -2,7 +2,7 @@
 #include <string>
 
 
-Parser::Parser(std::string request) : request(request){}
+Parser::Parser(std::string request) : request(request), bad_responce(false) {}
 
 Parser::~Parser(){}
 
@@ -10,20 +10,21 @@ void Parser::splitRequest(){
     std::size_t found = this->request.rfind("\r\n\r\n");
     if (found != std::string::npos)
     {
-        this->splited_req[1] = this->request.substr(found+4);
+        this->body = this->request.substr(found+4);
     }
-        this->splited_req[0] = this->request.substr(0, found);
-    std::cout << splited_req[0] << std::endl; // print debug
-    std::cout << "1111" << std::endl;// print debug
-    std::cout << splited_req[1] << std::endl;// print debug
+    else
+    {
+        this->bad_responce = true;
+    }
+    this->splited_req = this->request.substr(0, found);
 }
 
 void Parser::parseLines(){
-    std::size_t found = this->splited_req[0].find("\r\n");
+    std::size_t found = this->splited_req.find("\r\n");
     std::size_t start = 0;
     std::string line;
     std::string start_line;
-    start_line = this->splited_req[0];
+    start_line = this->splited_req;
     while (found != std::string::npos)
     {
         line = start_line.substr(start, found);
@@ -34,9 +35,14 @@ void Parser::parseLines(){
     }
 }
 
-void Parser::parse(){
+void Parser::parseStartLine(){
     std::vector<std::string> lines;
     std::size_t found = this->lines[0].find(" ");
+    if (found == std::string::npos)
+    {
+        this->bad_responce = true;
+        return ;
+    }
     std::size_t start = 0;
     std::string line;
     std::string start_line;
@@ -48,7 +54,8 @@ void Parser::parse(){
             flag = false;
         line = start_line.substr(start, found);
         std::cout << "|" << line << "|" << std::endl; //print debug
-        lines.push_back(line);
+        if (line != "")
+            lines.push_back(line);
         start_line = start_line.substr(found + 1);
         found = start_line.find(" ");
     }
@@ -56,16 +63,35 @@ void Parser::parse(){
     this->path = lines[1];
     this->version = lines[2];
     std::cout << this->method << " *** " << this->path<< " *** " << this->version << " *** \n";
+    if (lines[0] == "" || lines[1] == "" || lines[2] == "")
+        bad_responce = true;
+}
+
+void Parser::parseHeaders(){
+    if (this->bad_responce)
+        return;
+    if (this->lines.size() == 1)
+    {
+        std::cout << "end\n";
+        return;
+    }
+    size_t n;
+    n = 1;
+    while (n < lines.size()){
+        
+    }
 }
 
 
 
-// int main ()
-// {
-//     Parser parser("GET gsdhg hgdhsg\r\naaaaaaa\r\nbbbb\r\n");
-//     parser.splitRequest();
-//     if (parser.splited_req[1] == "")
-//         std::cout << "no content\n";
-//     parser.parseLines();
-//     parser.parse();
-// }
+
+int main ()
+{
+    Parser parser("GETgsdhg\r\n");
+    parser.splitRequest();
+    if (parser.body == "")
+        std::cout << "no content\n";
+    parser.parseLines();
+    parser.parseStartLine();
+    parser.parseHeaders();
+}
