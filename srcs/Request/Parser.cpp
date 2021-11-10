@@ -1,8 +1,13 @@
-#include "../includes/Parser.hpp"
+#include "../../includes/Parser.hpp"
 #include <string>
+#include <iostream>
 
 
-Parser::Parser(std::string request) : request(request){}
+Parser::Parser(std::string request) : request(request){
+    this->splitRequest();
+    this->parseLines();
+    this->parse();
+}
 
 Parser::~Parser(){}
 

@@ -1,6 +1,6 @@
-SRCS = ./srcs/main.cpp
+SRCS = ./srcs/main.cpp $(wildcard ./srcs/Request/*.cpp) $(wildcard ./srcs/Response/*.cpp)
 OBJS	= $(SRCS:.cpp=.o)
-CFLAGS = -Iincludes/ -g -MMD
+CFLAGS = -Iincludes/ -g
 CC = clang++
 NAME = webserver
 

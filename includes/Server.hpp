@@ -9,6 +9,10 @@
 #include <algorithm>
 #include <set>
 #include <iostream>
+#include "Parser.hpp"
+#include "Response.hpp"
+
+
 
 
 std::string example = "HTTP/1.1 200 OK\r\nServer: nginx\r\nDate: Sat, 08 Mar 2014 22:29:53 GMT\r\nContent-Type: text/html\r\nContent-Length: 139\r\nConnection: keep-alive\r\nKeep-Alive: timeout=25\r\n\r\n<html><head><title>302 Found</title></head><body bgcolor=\"white\"><center><h1>302 Found</h1></center><hr><center>nginx</center</body></html>";
@@ -84,10 +88,14 @@ class Server{
                         clients.erase(*it);
                         goto start;
                     }
-                    std::cout << buffer;
-                // Тут парсить надо
+                    //std::cout << buffer;
+                Parser p(buffer);// Тут парсить надо
+                std::string s2 = getListingResponse(p.path);
+                s2.insert(0, "HTTP/1.1 200 OK\r\nContent-type: text/html\r\nContent-length: " + std::to_string(s2.size()) + "\r\n\r\n");
+                
                 // Ответ клиенту
-                    send(*it, example.c_str(), example.length(), 0);
+                std::cout << s2 << std::endl;
+                    send(*it, s2.c_str(), s2.length(), 0);
                 }
             }
         }
