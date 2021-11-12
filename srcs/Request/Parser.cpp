@@ -121,15 +121,15 @@ void Parser::parseHeaders(){
     printVector(this->headers);
 }
 
-void Parser::printVector( std::vector<std::pair<std::string, std::list<std::string> > > vec){
-    for(size_t i = 0;  i < vec.size(); i++)
-    {
-        std::cout << i << ": " << vec[i].first << "| ";
-        for (std::string s : vec[i].second)
-            std::cout << s << "||";
-        std::cout << std::endl;
-    }
-}
+// void Parser::printVector( std::vector<std::pair<std::string, std::list<std::string> > > vec){
+//     for(size_t i = 0;  i < vec.size(); i++)
+//     {
+//         std::cout << i << ": " << vec[i].first << "| ";
+//         for (std::string s : vec[i].second)
+//             std::cout << s << "||";
+//         std::cout << std::endl;
+//     }
+// }
 
 std::string Parser::trimLine(std::string str, std::string totrim)
 {

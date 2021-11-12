@@ -1,4 +1,5 @@
 #include "Server.hpp"
+#include "Parser.hpp"
 #include <iostream>
 #include <unistd.h>
 
@@ -143,7 +144,7 @@ void Server::doRecv(uint64_t socket)
     
     if (_requests[socket] != "")
     {
-        //execute shit in request
+        Parser p(_requests[socket]);
     }
 }
 
