@@ -8,6 +8,9 @@
 #include <dirent.h> 
 #include <stdio.h>
 #include <regex>
+#include <unordered_map>
+
+std::unordered_map<std::string, std::string> MIMES;
 
 std::string readFile(std::string& filename) {
     std::ifstream f;
