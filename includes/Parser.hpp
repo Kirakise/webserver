@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <utility>
+#include <list>
 
 
 class Parser{
@@ -19,7 +20,7 @@ class Parser{
         std::string                                        method;
         std::string                                        version;
         std::string                                        path;
-        std::vector<std::pair<std::string, std::string> >  headers;
+        std::vector<std::pair<std::string, std::list<std::string> > > headers;
         std::string                                        body;
         bool                                               bad_responce;
 
@@ -33,5 +34,8 @@ class Parser{
         void parseLines();
         void splitRequest();
         void parseAll();
+        void printVector( std::vector<std::pair<std::string, std::list<std::string> > >);
+        std::string trimLine(std::string str, std::string totrim);
+        std::list<std::string> splitLine(const char *str, const char * sep);
 
 };
