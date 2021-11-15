@@ -4,7 +4,7 @@
 #include <sys/socket.h>
 #include <fcntl.h>
 #include <netinet/in.h>
-#include "ServerConf.hpp"
+#include "Ultimate.hpp"
 
 #define READ_SIZE 1024
 

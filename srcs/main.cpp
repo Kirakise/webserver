@@ -1,25 +1,19 @@
-#include "Server.hpp"
-
+#include "Ultimate.hpp"
+#include <iostream>
 int main(){
-    Server *serv;
+    Cluster clust;
     try{
         std::cout << "228";
-        serv = new Server(228);
+        serv = new Server(228, AF_INET);
     }
     catch ( std::exception &e)
     {
         std::cout << "229";
-        serv = new Server(229);
+        serv = new Server(229, AF_INET);
     }
     
     std::cout << serv->port;
     
-    try {
-    serv->run();
-    }
-    catch ( std::exception &e )
-    {
-        std::cout << e.what();
-    }
+    serv
     return (0);
 }

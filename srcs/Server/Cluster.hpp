@@ -1,6 +1,6 @@
 #pragma once
 #include "Server.hpp"
-#include "ServerConf.hpp"
+#include "Ultimate.hpp"
 
 struct t_conf;
 

@@ -144,7 +144,9 @@ void Server::doRecv(uint64_t socket)
     
     if (_requests[socket] != "")
     {
-        Parser p(_requests[socket]);
+        Response p(Parser(_requests[socket]), _conf);
+        p.Execute();
+        _requests[socket] = p.getResponse();
     }
 }
 

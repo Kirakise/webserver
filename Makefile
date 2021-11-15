@@ -1,4 +1,5 @@
-SRCS = ./srcs/main.cpp $(wildcard ./srcs/Request/*.cpp) $(wildcard ./srcs/Response/*.cpp)
+SRCS = ./srcs/main.cpp $(wildcard ./srcs/Request/*.cpp) $(wildcard ./srcs/Response/*.cpp) \
+	$(wildcard ./srcs/Configs/*.cpp) $(wildcard ./srcs/Server/*.cpp)
 OBJS	= $(SRCS:.cpp=.o)
 CFLAGS = -Iincludes/ -g
 CC = clang++

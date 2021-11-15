@@ -1,9 +1,8 @@
+#pragma once
 #include <fstream>
 #include <string>
 #include <vector>
-#include "Parser.hpp"
-#include "ServerConf.hpp"
-
+#include "Ultimate.hpp"
 std::string readFile(std::string& filename);
 
 std::string getListingResponse(std::string path);
@@ -30,3 +29,5 @@ class Response{
     std::string getCodeText(uint8_t code);
     std::string getResponse();
 };
+
+std::string getType(std::string path);
