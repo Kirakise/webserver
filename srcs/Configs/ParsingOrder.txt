@@ -1,0 +1,12 @@
+1. Кол-во серверов
+2. Внутри каждого сервера:
+
+- listen
+- server_name
+- root
+- index 
+- allow_methods
+- locations
+
+3. В locations:
+
