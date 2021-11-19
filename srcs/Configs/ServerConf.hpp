@@ -6,8 +6,8 @@
 #include "ServerBlock.hpp"
 
 
-
-class ServerConf : public ServerBlock{
+class ServerConf : public ServerBlock
+{
 
     public:
     ServerConf();
@@ -24,10 +24,10 @@ class ServerConf : public ServerBlock{
     std::vector<std::string> _cgiParams;
     std::string serverText;
     
-    uint16_t getPort() { return _port; }
-    uint64_t getHost() { return _host; }
+    // uint16_t getPort() { return _port; }
+    // uint64_t getHost() { return _host; }
 
-    void ParseAll();
-    void ParseListen();
+    // void ParseAll();
+    // void ParseListen();
 
 };
