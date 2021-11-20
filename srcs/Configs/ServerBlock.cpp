@@ -2,17 +2,19 @@
 #include "ServerBlock.hpp"
 #include "ServerConf.hpp"
 
+ServerBlock::ServerBlock(){};
+ServerBlock::~ServerBlock(){};
+
 void ServerBlock::ParseAll(){
     try{
         SplitServers();
-        ParseServers();
     }
     catch(std::exception const & ex){
         this->badConfig = true;
     }
 }
 
-ServerConf *ServerBlock::NewServer(){
+ServerBlock::ServerConf *ServerBlock::NewServer(){
     ServerConf *server = new ServerConf();
     return server;
 }
@@ -42,8 +44,8 @@ void ServerBlock::listen(std::string str, size_t n)throw (BadConfig){
     std::string word;
     word = "listen";
     size_t i = 0;
-    i = word.length();
-    while (str[i] == ' ' && i < str.length())
+    i = word.length() + 1;
+    while ((str[i] == ' ' || str[i] == '\t') && i < str.length())
         i++;
     if (i == str.length())
         throw ServerBlock::BadConfig();
@@ -68,18 +70,90 @@ void ServerBlock::listen(std::string str, size_t n)throw (BadConfig){
     this->servers[n]._port = atoi((const char *)word.c_str());
     std::cout << this->servers[n]._port << " " << this->servers[n].host << std::endl;
 }
-void ServerBlock::serverName(std::string str, size_t n)throw (BadConfig){
 
+void ServerBlock::serverName(std::string str, size_t n)throw (BadConfig){
+    std::string word;
+    word = "server_name";
+    size_t i = word.length() + 1;
+    while (str[i] == ' ' || str[i] == '\t')
+        i++;
+    while (i < str.length()){
+        word = "";
+         while (str[i] != ' ' && i < str.length()){
+            word += str[i];
+            i++;
+        }
+        this->servers[n]._serverName.push_back(word);
+        while (str[i] == ' ' || str[i] == '\t')
+        i++;
+    }
+    int u = 0;
+    while (u < this->servers[n]._serverName.size()){
+        std::cout << this->servers[n]._serverName[u] << std::endl;
+        u++;
+    }
+        
 }
 
 void ServerBlock::root(std::string str, size_t n)throw (BadConfig){
-
+    
+    std::string word;
+    word = "root";
+    size_t i = word.length() + 1;
+    while (str[i] == ' ' || str[i] == '\t')
+        i++;
+    word = "";
+    while (i < str.length()){
+        word += str[i];
+        i++;
+    }
+    this->servers[n]._root = word;
+    std::cout << this->servers[n]._root << std::endl;
 }
-void ServerBlock::index(std::string str, size_t n)throw (BadConfig){
 
+void ServerBlock::index(std::string str, size_t n)throw (BadConfig){
+    std::string word;
+    word = "index";
+    size_t i = word.length() + 1;
+    while (str[i] == ' ' || str[i] == '\t')
+        i++;
+    while (i < str.length()){
+        word = "";
+         while (str[i] != ' ' && i < str.length()){
+            word += str[i];
+            i++;
+        }
+        this->servers[n]._indexes.push_back(word);
+        while (str[i] == ' ' || str[i] == '\t')
+        i++;
+    }
+    int u = 0;
+    while (u < this->servers[n]._indexes.size()){
+        std::cout << this->servers[n]._indexes[u] << std::endl;
+        u++;
+    }
 }
 void ServerBlock::allow_methods(std::string str, size_t n)throw (BadConfig){
-
+        std::string word;
+    word = "allow_methods";
+    size_t i = word.length() + 1;
+    while (str[i] == ' ' || str[i] == '\t')
+        i++;
+    while (i < str.length()){
+        word = "";
+         while (str[i] != ' ' && i < str.length()){
+            word += str[i];
+            i++;
+        }
+        this->servers[n].allowedMethods.push_back(word);
+        while (str[i] == ' ' || str[i] == '\t')
+        i++;
+    }
+    int u = 0;
+    while (u < this->servers[n].allowedMethods.size()){
+        std::cout << this->servers[n].allowedMethods[u] << std::endl;
+        u++;
+    }
 }
 void ServerBlock::locations(std::string str, size_t n)throw (BadConfig){
 
@@ -105,10 +179,15 @@ void ServerBlock::ParseTokens(std::string str, size_t n) throw (BadConfig)
     size_t i = 0;
     size_t j = 0;
     std::string word;
-    if (str == "")
+    if (str == "" || isempty(str))
         return ;
+    while (str[i] == '\t')
+        i++;
     while (str[i] != ' ' && i < str.length())
+    {
         word+=str[i];
+        i++;
+    }
     while (word != types[j] && j < 8)
         j++;
     if (j == 8)
@@ -151,17 +230,10 @@ void ServerBlock::ServerCount() throw (BadConfig)
     this->serverCount = server_count;
 }
 
-void ServerBlock::ParseServers() throw (BadConfig)
-{
-    for(int i = 0; i < this->serverCount; i++)
-    {
-        this->servers[i].ParseAll();
-    }
-}
 
 int main()
 {
     ServerBlock sv;
-    sv.file = "ex.conf";
+    sv.file = "srcs/Configs/ex.conf";
     sv.ParseAll();
 }

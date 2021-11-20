@@ -1,4 +1,5 @@
-#pragma once
+#ifndef LOCATION_HPP
+# define LOCATION_HPP
 
 #include "ServerBlock.hpp"
 #include "ServerConf.hpp"
@@ -10,22 +11,15 @@ class Location{
     Location();
     ~Location();
 
-    Location *locations;
     std::vector < std::string> locTokens;
     std::string alias;
-    bool alias;
+    bool _alias;
     std::string root;
-    bool root;
+    bool _root;
     std::vector < std::string > allowedMethods;
     std::string index;
     std::string cgi_pass;
     size_t clientBodyBufferSize;
-
-    void ParseLocTokens();
-    void ParseAlias();
-    void ParseRoot();
-    void ParseLocation();
-    void ParseAllowedMethods();
-    void ParseCgiPass();
-
 };
+
+#endif
