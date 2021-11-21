@@ -1,6 +1,5 @@
 
 #include "ServerBlock.hpp"
-#include "ServerConf.hpp"
 
 ServerBlock::ServerBlock(){};
 ServerBlock::~ServerBlock(){};
@@ -23,7 +22,6 @@ void ServerBlock::SplitServers() throw (BadConfig)
 {
     this->serverCount = 0;
     std::string buf;
-    bool open_scope;
     std::ifstream file(this->file);
     if (!file)
         throw ServerBlock::BadConfig();
@@ -33,11 +31,11 @@ void ServerBlock::SplitServers() throw (BadConfig)
         {
             this->servers.push_back(*this->NewServer());
             this->serverCount++;
+            this->servers[serverCount - 1].open_scope = true;
         }
-        while(std::getline(file, buf))
+        while(std::getline(file, buf) && this->servers[serverCount - 1].open_scope)
             this->ParseTokens(buf, this->serverCount-1);
     }
-
 }
 
 void ServerBlock::listen(std::string str, size_t n)throw (BadConfig){
@@ -133,6 +131,7 @@ void ServerBlock::index(std::string str, size_t n)throw (BadConfig){
         u++;
     }
 }
+
 void ServerBlock::allow_methods(std::string str, size_t n)throw (BadConfig){
         std::string word;
     word = "allow_methods";
@@ -155,25 +154,21 @@ void ServerBlock::allow_methods(std::string str, size_t n)throw (BadConfig){
         u++;
     }
 }
-void ServerBlock::locations(std::string str, size_t n)throw (BadConfig){
 
-}
-void ServerBlock::open_scope(std::string str, size_t n)throw (BadConfig){
 
-}
+
 void ServerBlock::closed_scope(std::string str, size_t n)throw (BadConfig){
-
+    this->servers[n].open_scope = false;
 }
 
 void ServerBlock::ParseTokens(std::string str, size_t n) throw (BadConfig)
 {
-    std::string types[8] = {"listen",
+    std::string types[7] = {"listen",
                         "server_name",
                         "root",
                         "index",
                         "allow_methods",
                         "locations",
-                        "{",
                         "}"};
 
     size_t i = 0;
@@ -188,18 +183,17 @@ void ServerBlock::ParseTokens(std::string str, size_t n) throw (BadConfig)
         word+=str[i];
         i++;
     }
-    while (word != types[j] && j < 8)
+    while (word != types[j] && j < 7)
         j++;
-    if (j == 8)
+    if (j == 7)
         throw ServerBlock::BadConfig();
     typedef void(ServerBlock::*Parse)(std::string str, size_t n);
-    Parse word_parse[8] = {&ServerBlock::listen,
+    Parse word_parse[7] = {&ServerBlock::listen,
                      &ServerBlock::serverName, 
                      &ServerBlock::root, 
                      &ServerBlock::index, 
                      &ServerBlock::allow_methods, 
                      &ServerBlock::locations, 
-                     &ServerBlock::open_scope, 
                      &ServerBlock::closed_scope};
     (this->*word_parse[j])(str, n);
 }
@@ -230,6 +224,21 @@ void ServerBlock::ServerCount() throw (BadConfig)
     this->serverCount = server_count;
 }
 
+
+
+// LOCATION METHODS:
+
+void ServerBlock::locations(std::string str, size_t n)throw (BadConfig){
+    ServerConf::Location *newloc = ServerConf::Location::newLocation();
+    this->servers[n].locs.push_back(*newloc);
+    this->servers[n].loc_number+= 1;
+    this->servers[n].locs[this->servers[n].loc_number - 1].ParseLocation();
+}
+
+
+
+
+// MAIN FOR DEBUG: 
 
 int main()
 {
