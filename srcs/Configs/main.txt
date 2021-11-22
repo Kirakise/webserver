@@ -1,0 +1,17 @@
+#include "Location.hpp"
+#include "ServerBlock.hpp"
+#include "ServerConf.hpp"
+
+size_t line_number;
+
+int main()
+{
+    ServerBlock sv;
+    sv.file = "ex.conf";
+    sv.ParseAll();
+    size_t i = 0;
+    while (i < sv.servers.size()){
+        std::cout << sv.servers[i].locs.size() << std::endl;
+        i++;
+    }
+}

@@ -1,6 +1,8 @@
 
 #include "ServerBlock.hpp"
 
+extern size_t line_number;
+
 ServerBlock::ServerBlock(){};
 ServerBlock::~ServerBlock(){};
 
@@ -13,13 +15,15 @@ void ServerBlock::ParseAll(){
     }
 }
 
-ServerBlock::ServerConf *ServerBlock::NewServer(){
+ServerConf *ServerBlock::NewServer(){
     ServerConf *server = new ServerConf();
     return server;
 }
 
 void ServerBlock::SplitServers() throw (BadConfig)
 {
+    size_t n = 0;
+    this->flag = false;
     this->serverCount = 0;
     std::string buf;
     std::ifstream file(this->file);
@@ -27,14 +31,34 @@ void ServerBlock::SplitServers() throw (BadConfig)
         throw ServerBlock::BadConfig();
     while(std::getline(file, buf))
     {
+        line_number += 1;
+        n++;
         if (buf == "server {")
         {
             this->servers.push_back(*this->NewServer());
             this->serverCount++;
             this->servers[serverCount - 1].open_scope = true;
         }
-        while(std::getline(file, buf) && this->servers[serverCount - 1].open_scope)
+        std::string tmp;
+        while(this->servers[serverCount - 1].open_scope)
+        {
+            std::getline(file, buf);
+            n++;
+            line_number += 1;
+            while (n < line_number){
+                tmp = buf;
+                std::getline(file, buf);
+                n++;
+            }
+            if (buf == "" && tmp == "}")
+                buf = tmp;
+            // line_number += 1;
+            // n++;
             this->ParseTokens(buf, this->serverCount-1);
+            // if (flag)
+            //     this->
+        }
+        size_t q = 0;
     }
 }
 
@@ -168,7 +192,7 @@ void ServerBlock::ParseTokens(std::string str, size_t n) throw (BadConfig)
                         "root",
                         "index",
                         "allow_methods",
-                        "locations",
+                        "location",
                         "}"};
 
     size_t i = 0;
@@ -229,10 +253,11 @@ void ServerBlock::ServerCount() throw (BadConfig)
 // LOCATION METHODS:
 
 void ServerBlock::locations(std::string str, size_t n)throw (BadConfig){
-    ServerConf::Location *newloc = ServerConf::Location::newLocation();
+    Location *newloc = Location::newLocation();
     this->servers[n].locs.push_back(*newloc);
     this->servers[n].loc_number+= 1;
-    this->servers[n].locs[this->servers[n].loc_number - 1].ParseLocation();
+    // std::cout << line_number << std::endl;
+    this->servers[n].locs[this->servers[n].loc_number - 1].ParseLocation(this->file);
 }
 
 
@@ -240,9 +265,9 @@ void ServerBlock::locations(std::string str, size_t n)throw (BadConfig){
 
 // MAIN FOR DEBUG: 
 
-int main()
-{
-    ServerBlock sv;
-    sv.file = "srcs/Configs/ex.conf";
-    sv.ParseAll();
-}
+// int main()
+// {
+//     ServerBlock sv;
+//     sv.file = "srcs/Configs/ex.conf";
+//     sv.ParseAll();
+// }
