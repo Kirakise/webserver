@@ -2,17 +2,16 @@
 #include "Server.hpp"
 #include "Ultimate.hpp"
 
-struct t_conf;
+struct Server;
 
 class Cluster{
     public:
-    Cluster(t_conf f);
     ~Cluster();
     int setup();
     void run();
     void clear();
-    private:
     Cluster(std::vector <ServerConf> &);
+    private:
     std::vector <Server> _servers;
     std::unordered_map <uint64_t, Server *> _serverMap;
     std::vector <uint64_t> _answer;

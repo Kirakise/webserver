@@ -118,7 +118,7 @@ void Parser::parseHeaders(){
         this->headers.push_back(p1);
         n++;
     }
-    printVector(this->headers);
+    //printVector(this->headers);
 }
 
 // void Parser::printVector( std::vector<std::pair<std::string, std::list<std::string> > > vec){

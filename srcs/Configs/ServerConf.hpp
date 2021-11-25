@@ -9,7 +9,7 @@
         public:
 
 
-        ServerConf() : _port(80), host("default"), _autoindex(false), loc_number(0){};
+        ServerConf() : _port(80), host("127.0.0.1"), _autoindex(false), loc_number(0){};
         ~ServerConf(){};
 
         uint16_t _port;
@@ -28,8 +28,8 @@
         std::vector < Location > locs;
         size_t loc_number;
     
-    // uint16_t getPort() { return _port; }
-    // uint64_t getHost() { return _host; }
+        uint16_t getPort() { return _port; }
+        std::string getHost() { return host; }
 
       
     };

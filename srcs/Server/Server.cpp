@@ -2,34 +2,40 @@
 #include "Parser.hpp"
 #include <iostream>
 #include <unistd.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 
-Server::Server(uint16_t port, uint64_t host) : _port(port), _host(host){}
+Server::Server(int port, std::string host) : _port(port) {
+    inet_pton(AF_INET, host.c_str(), &_host);
+}
 
 Server::~Server() {}
 
-Server::Server(ServerConf c) : _port(c.getPort()), _host(c.getHost()), _conf(c) {}
+Server::Server(ServerConf c) : _port(c.getPort()), _host(inet_addr(c.getHost().c_str())), _conf(c) {}
 
 int Server::setServer()
 {
     if ((_fd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
     {
         std::cerr << "Error creating socket" << std::endl;
-        return ;
+        return -1;
     }
     memset(&_addr, 0, sizeof(_addr));
     _addr.sin_family = AF_INET;
     _addr.sin_addr.s_addr = htonl(_host);
-    _addr.sin_port = htonl(_port);
+    _addr.sin_port = htons(_port);
     if (bind(_fd, (struct sockaddr *)&_addr, sizeof(_addr)) == -1)
     {
         std::cerr << "Error binding port" << _port << std::endl;
-        return ;
+        return -1;
     }
     if (listen(_fd, 20) == -1)
     {
         std::cerr << "Could not start listening" << std::endl;
-        return ;
+        return -1;
     }
+    return 1;
 }
 
 int Server::accept(void)
@@ -119,19 +125,21 @@ int Server::recv(uint64_t socket)
 
 int Server::send(uint64_t socket)
 {
+    size_t sent;
+    while (true)
+    {
     std::string sendstr = _requests[socket].substr(0, READ_SIZE);
-    if (::send(socket, sendstr.c_str(), sendstr.size(), 0) == -1)
+    if ((sent = ::send(socket, sendstr.c_str(), sendstr.size(), 0)) == -1)
     {
         this->closeSocket(socket);
         return (-1);
     }
     else
     {
-        _requests[socket].erase(0, READ_SIZE);
+        _requests[socket].erase(0, sent);
         if (_requests[socket].size() == 0)
             return 0;
-        else
-            return 1;
+    }
     }
 }
 

@@ -34,20 +34,76 @@ bool checkIfExists(std::string path)
     return (stat (path.c_str(), &buffer) == 0);
 }
 
-bool isIndexed(std::string &path, std::vector <std::string> &index)
+std::string getPath(std::string path)
 {
-    for (int i = 0; i < index.size(); i++)
-    {
-        if (path == index[i])
-            return true;
+    int i = path.size() - 1;
+
+    while (path[i] != '/')
+        i--;
+    return path.substr(0, i);
+}
+
+std::string getFile(std::string path)
+{
+    int i = path.size() - 1;
+    while (path[i] != '/');
+}
+
+std::string getFilePathInLoc(std::string path, std::string locpath)
+{
+    int size = path.find(locpath) + locpath.size();
+    return path.substr(size, path.size());
+}
+
+std::string isIndexed(std::string &path, ServerConf conf, Location *l = 0)
+{
+    int loc = -1;
+    bool find = false;
+    if (l == 0) //Если мы не внутри location
+        for (int i = 0; i < conf.locs.size(); i++)
+        {
+            if (getPath(path).find(conf.locs[i].locations[0]) != std::string::npos &&
+            (loc == -1 || conf.locs[i].locations[0].size() > conf.locs[loc].locations[0].size()))
+                loc = i;
+        }
+    else // Если мы смотрим другой локейшн
+        for (int i = 0; i < l->locs.size(); i++)
+        {
+            if (getPath(path).find(l->locs[i].locations[0]) != std::string::npos &&
+            (loc == -1 || l->locs[i].locations[0].size() > l->locs[loc].locations[0].size()))
+                loc = i;
+        }
+    
+    if (loc != -1) { //Если нашлась лока
+        if (l == 0)
+            return isIndexed(path, conf, &conf.locs[loc]);
+        else
+            return isIndexed(path, conf, &l->locs[loc]);
     }
-    return false;
+    else{
+        if (l == 0) {
+            if (conf._autoindex)
+                return conf._root + path;
+            else
+                for (int i = 0; i < conf._indexes.size(); i++)
+                    if (conf._root + conf._indexes[i] == path)
+                        return conf._root + path;
+            return "";
+        }
+        else {
+            if (false) {}
+            else
+                for (int i = 0; i < conf._indexes.size(); i++)
+                    if (l->_root + l->indexes[i] == getFilePathInLoc(path, l->locations[0]))
+                        return l->_root + path;
+            return "";
+        }
+    }
 }
 
 void Response::Execute()
 {
     if (pars.bad_responce) { code = 400; return ; }
-    if (!checkIfExists(pars.path)) { code = 404; return ; }
     if (pars.method == "GET")
         GET();
     else if (pars.method == "POST")
@@ -58,7 +114,8 @@ void Response::Execute()
 
 void Response::GET()
 {
-    if (!Conf._autoindex && !isIndexed(pars.path, Conf._indexes)) { code = 403; return ; }
+    if ((pars.path = isIndexed(pars.path, Conf)) == "") { code = 403; return ; }
+    if (!checkIfExists(pars.path)) { code = 404; return ; }
     if (isDirectory(pars.path)){
         code = 200;
         Content_type = "text/html";
@@ -73,7 +130,8 @@ void Response::GET()
 
 void Response::DELETE()
 {
-    if (checkIfExists(pars.path))
+    if ((pars.path = isIndexed(pars.path, Conf)) == "") { code = 403; return ; }
+    if (!checkIfExists(pars.path))
     {
         std::remove(pars.path.c_str());
         if(!std::ifstream(pars.path))
@@ -88,7 +146,8 @@ void Response::DELETE()
 void Response::POST()
 {
     std::ofstream f;
-    if (checkIfExists(pars.path))
+    if ((pars.path = isIndexed(pars.path, Conf)) == "") { code = 403; return ; }
+    if (!checkIfExists(pars.path))
     {
         f.open(pars.path, std::ofstream::app);
         if (f.good()) {
@@ -133,7 +192,7 @@ std::string getType(std::string path)
 		return "text/plain";
 }
 
-std::string Response::getCodeText(uint8_t code)
+std::string Response::getCodeText(uint16_t code)
 {
     std::string s;
     if (code == 200)
@@ -156,16 +215,21 @@ std::string Response::getCodeText(uint8_t code)
         Content = readFile(s);
         return "Bad request";
     }
+    else return "Internal error";
 }
 
 std::string Response::getResponse(){
     std::string ret;
 
-    ret == "HTTP/1.1 " + std::to_string(code) + getCodeText(code) + "\r\n";
+    ret = "HTTP/1.1 " + std::to_string(code) + " " + getCodeText(code) + "\r\n";
     if (Content != "")
     {
-        ret.append("Content-Type " + Content_type + "\r\n");
-        ret.append("Content-Length " + std::to_string(Content.size()) + "\r\n\r\n");
+        ret.append("Content-Type: " + Content_type + "\r\n");
+        ret.append("Content-Length: " + std::to_string(Content.size()) + "\r\n\r\n");
         ret.append(Content);
     }
+    else 
+        ret.append("\r\n");
+    std::cout << ret;
+    return ret;
 }

@@ -4,9 +4,7 @@
 
 extern size_t line_number;
 
-Location::Location(){
-
-}
+Location::Location(){}
     
 Location::~Location(){
 
@@ -169,7 +167,7 @@ void Location::root(std::string str){
         word += str[i];
         i++;
     }
-    this->_root = word;
+    this->_root = word == "" ? this->_root : word;
     std::cout << this->_root << std::endl;
 }
 

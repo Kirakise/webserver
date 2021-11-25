@@ -10,7 +10,7 @@
 
 class Server{
     public:
-    Server(uint16_t port, uint64_t host);
+    Server(int port, std::string host);
     Server(ServerConf conf);
     ~Server();
     int setServer();
@@ -28,8 +28,8 @@ class Server{
     private:
     std::unordered_map<uint64_t, std::string> _requests;
     int64_t _fd;
-    uint16_t _port;
-    uint64_t _host;
+    int _port;
+    unsigned int _host;
     ServerConf _conf;
     struct sockaddr_in _addr;
 };

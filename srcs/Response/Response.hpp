@@ -13,7 +13,7 @@ int isDirectory(std::string path);
 
 class Response{
     public:
-    uint8_t code;
+    uint16_t code;
     uint64_t Content_length;
     std::string Content_type;
     std::string Content;
@@ -26,7 +26,7 @@ class Response{
     void GET();
     void POST();
     void DELETE();
-    std::string getCodeText(uint8_t code);
+    std::string getCodeText(uint16_t code);
     std::string getResponse();
 };
 
