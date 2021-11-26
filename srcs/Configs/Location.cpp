@@ -90,7 +90,7 @@ void Location::parse_autoindex(std::string str){
 
 void Location::parse_index(std::string str){
     std::string word;
-    word = "indexes";
+    word = "index";
     size_t i = word.length() + 1;
     while (str[i] == ' ' || str[i] == '\t')
         i++;
@@ -101,22 +101,23 @@ void Location::parse_index(std::string str){
             i++;
         }
         this->indexes.push_back(word);
+        std::cout << word << "asdasdasdasd" << std::endl;
         while (str[i] == ' ' || str[i] == '\t')
         i++;
     }
 }
 
 void Location::ParseTokens(std::string str){
-    std::string types[9] = {
+    std::string types[8] = {
                         "root",
-                        "index",
+                        // "index",
                         "allow_methods",
                         "cgi_pass",
                         "}",
                         "location",
                         "client_body_buffer_size",
-                        "parse_index",
-                        "parse_autoindex"};
+                        "index",
+                        "autoindex"};
 
     size_t i = 0;
     size_t j = 0;
@@ -130,13 +131,13 @@ void Location::ParseTokens(std::string str){
         word+=str[i];
         i++;
     }
-    while (word != types[j] && j < 9)
+    while (word != types[j] && j < 8)
         j++;
-    if (j == 9)
+    if (j == 8)
         throw ServerBlock::BadConfig();
     typedef void(Location::*Parse)(std::string str);
-    Parse word_parse[9] = {&Location::root, 
-                     &Location::index, 
+    Parse word_parse[8] = {&Location::root, 
+                    //  &Location::index, 
                      &Location::allow_methods,
                      &Location::cgi_pass,
                      &Location::closed_scope,
