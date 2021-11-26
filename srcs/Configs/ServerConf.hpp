@@ -9,7 +9,13 @@
         public:
 
 
-        ServerConf() : _port(80), host("127.0.0.1"), _autoindex(false), loc_number(0){};
+        ServerConf() : _port(80), host("127.0.0.1"), _autoindex(false), loc_number(0){
+            size_t i = 0;
+            while (i < 8){
+                this->type_index[i] = false;
+                i++;
+            }
+        };
         ~ServerConf(){};
 
         uint16_t _port;
@@ -31,7 +37,7 @@
         uint16_t getPort() { return _port; }
         std::string getHost() { return host; }
 
-      
+        bool type_index[8];
     };
 
     #endif
