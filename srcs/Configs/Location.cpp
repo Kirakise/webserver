@@ -76,7 +76,7 @@ void Location::parse_autoindex(std::string str){
     while (str[i] == ' ' || str[i] == '\t')
         i++;
     word = "";
-    while (i < str.length()){
+    while (i < str.length() && i != ' ' && i != '\t'){
         word += str[i];
         i++;
     }
