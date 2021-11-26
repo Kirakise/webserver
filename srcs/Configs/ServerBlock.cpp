@@ -223,7 +223,7 @@ void ServerBlock::ParseTokens(std::string str, size_t n) throw (BadConfig)
     std::string word;
     if (str == "" || isempty(str))
         return ;
-    while (str[i] == '\t')
+    while (str[i] == '\t' || str[i] == ' ')
         i++;
     while (str[i] != ' ' && i < str.length())
     {
