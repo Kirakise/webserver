@@ -38,8 +38,10 @@ int main()
     ServerBlock sv;
     sv.file = "configs/ex.conf";
     sv.ParseAll();
-    sv.servers[0]._autoindex = true;
-    sv.servers[1]._autoindex = true;
+    if (sv.badConfig){
+        std::cerr << "Fix config pls, i'm not working with this jewish thing" << std::endl;
+        return (0);
+    }
     FixBlock(sv);
     Cluster cl(sv.servers);
     cl.setup();
