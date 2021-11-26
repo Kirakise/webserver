@@ -127,7 +127,7 @@ void Location::ParseTokens(std::string str){
     std::string word;
     if (str == "" || ServerBlock::isempty(str))
         return ;
-    while (str[i] == '\t')
+    while (str[i] == '\t' || str[i] == ' ')
         i++;
     while (str[i] != ' ' && i < str.length())
     {
