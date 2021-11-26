@@ -157,7 +157,7 @@ void ServerBlock::index(std::string str, size_t n)throw (BadConfig){
 }
 
 void ServerBlock::allow_methods(std::string str, size_t n)throw (BadConfig){
-        std::string word;
+    std::string word;
     word = "allow_methods";
     size_t i = word.length() + 1;
     while (str[i] == ' ' || str[i] == '\t')
@@ -179,7 +179,23 @@ void ServerBlock::allow_methods(std::string str, size_t n)throw (BadConfig){
     }
 }
 
+void ServerBlock::parse_autoindex(std::string str, size_t n){
+    std::string word;
+    word = "autoindex";
+    size_t i = word.length() + 1;
+    while (str[i] == ' ' || str[i] == '\t')
+        i++;
+    while (i < str.length()){
+        word = "";
+    while (str[i] != ' ' && i < str.length())
+    {
+        word += str[i];
+        i++;
+    }
+    }
+    if (word == "on")
 
+}
 
 void ServerBlock::closed_scope(std::string str, size_t n)throw (BadConfig){
     this->servers[n].open_scope = false;
@@ -187,13 +203,14 @@ void ServerBlock::closed_scope(std::string str, size_t n)throw (BadConfig){
 
 void ServerBlock::ParseTokens(std::string str, size_t n) throw (BadConfig)
 {
-    std::string types[7] = {"listen",
+    std::string types[8] = {"listen",
                         "server_name",
                         "root",
                         "index",
                         "allow_methods",
                         "location",
-                        "}"};
+                        "}",
+                        "autoindex"};
 
     size_t i = 0;
     size_t j = 0;
@@ -207,9 +224,9 @@ void ServerBlock::ParseTokens(std::string str, size_t n) throw (BadConfig)
         word+=str[i];
         i++;
     }
-    while (word != types[j] && j < 7)
+    while (word != types[j] && j < 8)
         j++;
-    if (j == 7)
+    if (j == 8)
         throw ServerBlock::BadConfig();
     typedef void(ServerBlock::*Parse)(std::string str, size_t n);
     Parse word_parse[7] = {&ServerBlock::listen,
@@ -218,7 +235,8 @@ void ServerBlock::ParseTokens(std::string str, size_t n) throw (BadConfig)
                      &ServerBlock::index, 
                      &ServerBlock::allow_methods, 
                      &ServerBlock::locations, 
-                     &ServerBlock::closed_scope};
+                     &ServerBlock::closed_scope,
+                     &ServerBlock::parse_autoindex};
     (this->*word_parse[j])(str, n);
 }
 

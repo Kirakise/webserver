@@ -39,6 +39,7 @@ class ServerBlock
     void allow_methods(std::string str, size_t n) throw (BadConfig);
     void locations(std::string str, size_t n) throw (BadConfig);
     void closed_scope(std::string str, size_t n) throw (BadConfig);
+    void parse_autoindex(std::string str, size_t n) throw (BadConfig);
 
 
     std::vector < ServerConf > servers;

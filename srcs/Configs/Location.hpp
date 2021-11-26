@@ -8,7 +8,7 @@ class Location{
 
     public:
 
-    Location();
+    Location() : autoindex(false){};
     ~Location();
 
     std::vector < std::string> locations;
@@ -18,6 +18,7 @@ class Location{
     std::string _cgi_pass;
     size_t clientBodyBufferSize;
     std::vector < Location > locs;
+    bool autoindex;
 
     std::string filename;
 
