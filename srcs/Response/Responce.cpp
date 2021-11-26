@@ -94,8 +94,9 @@ std::string isIndexed(std::string &path, ServerConf conf, Location *l = 0)
             if (false) {}
             else
                 for (int i = 0; i < l->indexes.size(); i++)
-                    if (l->_root + l->indexes[i] == getFilePathInLoc(path, l->locations[0]))
-                        return l->_root + path;
+                    if (l->indexes[i] == getFilePathInLoc(path, l->locations[0]) || 
+                        "/" + l->indexes[i] == getFilePathInLoc(path, l->locations[0]))
+                        return l->_root + getFilePathInLoc(path, l->locations[0]);
             return "";
         }
     }
