@@ -58,6 +58,7 @@ void Cluster::run() {
                 }
                 if (b)
                     continue;
+                    
             }
             s2:
             for (std::unordered_map<uint64_t, Server *>::iterator it = _serverMap.begin();
