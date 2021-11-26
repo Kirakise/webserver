@@ -55,7 +55,7 @@ std::string getFilePathInLoc(std::string path, std::string locpath)
     return path.substr(size, path.size());
 }
 
-std::string isIndexed(std::string &path, ServerConf conf, Location *l = 0)
+std::string isIndexed(std::string &path, ServerConf &conf, Location *l = 0)
 {
     int loc = -1;
     bool find = false;
@@ -83,23 +83,41 @@ std::string isIndexed(std::string &path, ServerConf conf, Location *l = 0)
     else{
         if (l == 0) {
             if (conf._autoindex)
-                return conf._root + path;
+            {
+                path = conf._root + path;
+                goto end;
+            }
             else
                 for (int i = 0; i < conf._indexes.size(); i++)
                     if (conf._indexes[i] == path || "/" + conf._indexes[i] == path)
-                        return conf._root + path;
-            return "";
+                    {
+                        path = conf._root + path;
+                        goto end;
+                    }
+            path = "";
         }
         else {
-            if (false) {}
+            if (l->autoindex) {
+                path = conf._root + getFilePathInLoc(path, l->locations[0]);
+                goto end;
+            }
             else
                 for (int i = 0; i < l->indexes.size(); i++)
                     if (l->indexes[i] == getFilePathInLoc(path, l->locations[0]) || 
                         "/" + l->indexes[i] == getFilePathInLoc(path, l->locations[0]))
-                        return l->_root + getFilePathInLoc(path, l->locations[0]);
-            return "";
+                        {
+                        path =  l->_root + getFilePathInLoc(path, l->locations[0]);
+                        goto end;
+                        }
+            path = "";
         }
     }
+    end:
+    if (l != 0){
+        conf.allowedMethods = l->allowedMethods;
+        conf._cgi = l->_cgi_pass;
+    }
+    return path;
 }
 
 void Response::Execute()
@@ -113,9 +131,18 @@ void Response::Execute()
         DELETE();
 }
 
+bool isAllowed(const std::string &method, std::vector <std::string> &methods)
+{
+    for (int i = 0; i < methods.size(); i++)
+        if (method == methods[i])
+            return true;
+    return false;
+}
+
 void Response::GET()
 {
     if ((pars.path = isIndexed(pars.path, Conf)) == "") { code = 403; return ; }
+    if (!isAllowed("GET", Conf.allowedMethods)) { code = 405; return ;}
     if (!checkIfExists(pars.path)) { code = 404; return ; }
     if (isDirectory(pars.path)){
         code = 200;
@@ -132,6 +159,7 @@ void Response::GET()
 void Response::DELETE()
 {
     if ((pars.path = isIndexed(pars.path, Conf)) == "") { code = 403; return ; }
+    if (!isAllowed("DELELTE", Conf.allowedMethods)) { code = 405; return ;}
     if (!checkIfExists(pars.path))
     {
         std::remove(pars.path.c_str());
@@ -147,6 +175,8 @@ void Response::DELETE()
 void Response::POST()
 {
     std::ofstream f;
+    isIndexed(pars.path, Conf);
+    if (!isAllowed("POST", Conf.allowedMethods)) { code = 405; return ;}
     if ((pars.path = isIndexed(pars.path, Conf)) == "") { code = 403; return ; }
     if (!checkIfExists(pars.path))
     {
@@ -215,6 +245,12 @@ std::string Response::getCodeText(uint16_t code)
         Content_type = "text/html";
         Content = readFile(s);
         return "Bad request";
+    }
+    else if (code == 405){
+        s = "res/405.html";
+        Content_type = "text/html";
+        Content = readFile(s);
+        return "Method not allowed";
     }
     else return "Internal error";
 }

@@ -26,6 +26,7 @@ int Cluster::setup(){
 void Cluster::run() {
     while (1)
     {
+        bool b = false;
         fd_set wr_set;
         fd_set rd_set;
         struct timeval time;
@@ -50,10 +51,13 @@ void Cluster::run() {
                     uint64_t fd = _servers[i].accept();
                     if (fd > 0)
                     {
+                        b = true;
                         FD_SET(fd, &rd_set);
                         _serverMap.insert(std::make_pair(fd, &_servers[i]));
                     }
                 }
+                if (b)
+                    continue;
             }
             s2:
             for (std::unordered_map<uint64_t, Server *>::iterator it = _serverMap.begin();
