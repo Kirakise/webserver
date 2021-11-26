@@ -180,9 +180,12 @@ void ServerBlock::allow_methods(std::string str, size_t n)throw (BadConfig){
 }
 
 void ServerBlock::parse_autoindex(std::string str, size_t n)throw (BadConfig){
+    size_t i = 0;
+    while (str[i] == ' ' || str[i] == '\t')
+        i++;
    std::string word;
     word = "autoindex";
-    size_t i = word.length() + 1;
+    i = word.length() + i;
     while (str[i] == ' ' || str[i] == '\t')
         i++;
     word = "";
