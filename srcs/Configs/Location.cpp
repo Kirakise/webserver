@@ -90,7 +90,7 @@ void Location::parse_autoindex(std::string str){
 
 void Location::parse_index(std::string str){
     size_t i = 0;
-    while (str[i] == ' ' || str[i] == '\t' && i < str.length())
+    while ((str[i] == ' ' || str[i] == '\t') && i < str.length())
         i++;
     std::string word;
     word = "index";
