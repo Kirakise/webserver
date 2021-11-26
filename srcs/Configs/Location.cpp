@@ -4,7 +4,7 @@
 
 extern size_t line_number;
 
-Location::Location(){}
+Location::Location() : autoindex(false){};
     
 Location::~Location(){
 
@@ -66,15 +66,57 @@ void Location::allow_methods(std::string str){
     }
 }
 
+void Location::parse_autoindex(std::string str){
+    size_t i = 0;
+    while ((str[i] == ' ' || str[i] == '\t') && i < str.length())
+        i++;
+     std::string word;
+    word = "autoindex";
+    i += word.length() + 1;
+    while (str[i] == ' ' || str[i] == '\t')
+        i++;
+    word = "";
+    while (i < str.length()){
+        word += str[i];
+        i++;
+    }
+    if (word == "on")
+        this->autoindex = true;
+    else if (word == "off")
+        this->autoindex = false;
+    else
+        throw ServerBlock::BadConfig();
+}
+
+void Location::parse_index(std::string str){
+    std::string word;
+    word = "indexes";
+    size_t i = word.length() + 1;
+    while (str[i] == ' ' || str[i] == '\t')
+        i++;
+    while (i < str.length()){
+        word = "";
+         while (str[i] != ' ' && i < str.length()){
+            word += str[i];
+            i++;
+        }
+        this->indexes.push_back(word);
+        while (str[i] == ' ' || str[i] == '\t')
+        i++;
+    }
+}
+
 void Location::ParseTokens(std::string str){
-    std::string types[7] = {
+    std::string types[9] = {
                         "root",
                         "index",
                         "allow_methods",
                         "cgi_pass",
                         "}",
                         "location",
-                        "client_body_buffer_size"};
+                        "client_body_buffer_size",
+                        "parse_index",
+                        "parse_autoindex"};
 
     size_t i = 0;
     size_t j = 0;
@@ -88,18 +130,20 @@ void Location::ParseTokens(std::string str){
         word+=str[i];
         i++;
     }
-    while (word != types[j] && j < 7)
+    while (word != types[j] && j < 9)
         j++;
-    if (j == 7)
+    if (j == 9)
         throw ServerBlock::BadConfig();
     typedef void(Location::*Parse)(std::string str);
-    Parse word_parse[7] = {&Location::root, 
+    Parse word_parse[9] = {&Location::root, 
                      &Location::index, 
                      &Location::allow_methods,
                      &Location::cgi_pass,
                      &Location::closed_scope,
                      &Location::next_location,
-                     &Location::client_body_bufsize};
+                     &Location::client_body_bufsize,
+                     &Location::parse_index,
+                     &Location::parse_autoindex};
     std::cout << line_number << std::endl;
     (this->*word_parse[j])(str);
 }

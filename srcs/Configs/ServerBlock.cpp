@@ -179,23 +179,29 @@ void ServerBlock::allow_methods(std::string str, size_t n)throw (BadConfig){
     }
 }
 
-void ServerBlock::parse_autoindex(std::string str, size_t n){
-    std::string word;
+void ServerBlock::parse_autoindex(std::string str, size_t n)throw (BadConfig){
+   std::string word;
     word = "autoindex";
     size_t i = word.length() + 1;
     while (str[i] == ' ' || str[i] == '\t')
         i++;
+    word = "";
     while (i < str.length()){
-        word = "";
-    while (str[i] != ' ' && i < str.length())
-    {
         word += str[i];
         i++;
     }
-    }
+    if (i != str.length())
+        throw ServerBlock::BadConfig();
     if (word == "on")
-
+        this->servers[n]._autoindex = true;
+    else if (word == "off")
+        this->servers[n]._autoindex = false;
+    else   
+        throw ServerBlock::BadConfig();
+    std::cout << this->servers[n]._root << std::endl;
 }
+
+
 
 void ServerBlock::closed_scope(std::string str, size_t n)throw (BadConfig){
     this->servers[n].open_scope = false;
@@ -229,7 +235,7 @@ void ServerBlock::ParseTokens(std::string str, size_t n) throw (BadConfig)
     if (j == 8)
         throw ServerBlock::BadConfig();
     typedef void(ServerBlock::*Parse)(std::string str, size_t n);
-    Parse word_parse[7] = {&ServerBlock::listen,
+    Parse word_parse[8] = {&ServerBlock::listen,
                      &ServerBlock::serverName, 
                      &ServerBlock::root, 
                      &ServerBlock::index, 
