@@ -5,6 +5,8 @@
 extern size_t line_number;
 
 Location::Location() : autoindex(false){};
+
+Location::Location(bool autoindex) : autoindex(autoindex) {};
     
 Location::~Location(){
 
@@ -41,6 +43,7 @@ void Location::ParseDirects(std::string buf){
 }
 
 void Location::allow_methods(std::string str){
+    
     size_t i = 0;
     while ((str[i] == ' ' || str[i] == '\t') && i < str.length())
         i++;
@@ -195,7 +198,7 @@ void Location::cgi_pass(std::string str){
 
 void Location::next_location(std::string str){
     this->next_loc = true;
-    Location *loc = newLocation();
+    Location *loc = newLocation(this->autoindex);
     // loc->ParseLocation(this->filename);
     this->locs.push_back(*loc);
     this->locs[this->locs.size() - 1].ParseLocation(this->filename);

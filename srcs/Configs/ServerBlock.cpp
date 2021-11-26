@@ -3,7 +3,7 @@
 
 extern size_t line_number;
 
-ServerBlock::ServerBlock(){};
+ServerBlock::ServerBlock() : badConfig(false){};
 ServerBlock::~ServerBlock(){};
 
 void ServerBlock::ParseAll(){
@@ -63,6 +63,8 @@ void ServerBlock::SplitServers() throw (BadConfig)
 }
 
 void ServerBlock::listen(std::string str, size_t n)throw (BadConfig){
+    if (this->servers[n].type_index[LISTEN] == true)
+        throw ServerBlock::BadConfig();
     std::string word;
     word = "listen";
     size_t i = 0;
@@ -90,10 +92,13 @@ void ServerBlock::listen(std::string str, size_t n)throw (BadConfig){
     if (i != str.length())
         throw ServerBlock::BadConfig();
     this->servers[n]._port = atoi((const char *)word.c_str());
+    this->servers[n].type_index[LISTEN] = true;
     std::cout << this->servers[n]._port << " " << this->servers[n].host << std::endl;
 }
 
 void ServerBlock::serverName(std::string str, size_t n)throw (BadConfig){
+    if (this->servers[n].type_index[NAME] == true)
+        throw ServerBlock::BadConfig();
     std::string word;
     word = "server_name";
     size_t i = word.length() + 1;
@@ -109,6 +114,7 @@ void ServerBlock::serverName(std::string str, size_t n)throw (BadConfig){
         while (str[i] == ' ' || str[i] == '\t')
         i++;
     }
+    this->servers[n].type_index[NAME] = true;
     int u = 0;
     while (u < this->servers[n]._serverName.size()){
         std::cout << this->servers[n]._serverName[u] << std::endl;
@@ -118,7 +124,8 @@ void ServerBlock::serverName(std::string str, size_t n)throw (BadConfig){
 }
 
 void ServerBlock::root(std::string str, size_t n)throw (BadConfig){
-    
+    if (this->servers[n].type_index[ROOT] == true)
+        throw ServerBlock::BadConfig();
     std::string word;
     word = "root";
     size_t i = word.length() + 1;
@@ -130,10 +137,13 @@ void ServerBlock::root(std::string str, size_t n)throw (BadConfig){
         i++;
     }
     this->servers[n]._root = word;
+    this->servers[n].type_index[ROOT] = true;
     std::cout << this->servers[n]._root << std::endl;
 }
 
 void ServerBlock::index(std::string str, size_t n)throw (BadConfig){
+    if (this->servers[n].type_index[INDEX] == true)
+        throw ServerBlock::BadConfig();
     std::string word;
     word = "index";
     size_t i = word.length() + 1;
@@ -149,6 +159,7 @@ void ServerBlock::index(std::string str, size_t n)throw (BadConfig){
         while (str[i] == ' ' || str[i] == '\t')
         i++;
     }
+    this->servers[n].type_index[INDEX] = true;
     int u = 0;
     while (u < this->servers[n]._indexes.size()){
         std::cout << this->servers[n]._indexes[u] << std::endl;
@@ -157,6 +168,8 @@ void ServerBlock::index(std::string str, size_t n)throw (BadConfig){
 }
 
 void ServerBlock::allow_methods(std::string str, size_t n)throw (BadConfig){
+    if (this->servers[n].type_index[METHODS] == true)
+        throw ServerBlock::BadConfig();
     std::string word;
     word = "allow_methods";
     size_t i = word.length() + 1;
@@ -172,6 +185,7 @@ void ServerBlock::allow_methods(std::string str, size_t n)throw (BadConfig){
         while (str[i] == ' ' || str[i] == '\t')
         i++;
     }
+    this->servers[n].type_index[METHODS] = true;
     int u = 0;
     while (u < this->servers[n].allowedMethods.size()){
         std::cout << this->servers[n].allowedMethods[u] << std::endl;
@@ -180,6 +194,8 @@ void ServerBlock::allow_methods(std::string str, size_t n)throw (BadConfig){
 }
 
 void ServerBlock::parse_autoindex(std::string str, size_t n)throw (BadConfig){
+    if (this->servers[n].type_index[AUTOINDEX] == true)
+        throw ServerBlock::BadConfig();
     size_t i = 0;
     while (str[i] == ' ' || str[i] == '\t')
         i++;
@@ -201,6 +217,7 @@ void ServerBlock::parse_autoindex(std::string str, size_t n)throw (BadConfig){
         this->servers[n]._autoindex = false;
     else   
         throw ServerBlock::BadConfig();
+    this->servers[n].type_index[AUTOINDEX] = true;
     std::cout << this->servers[n]._root << std::endl;
 }
 
@@ -220,7 +237,6 @@ void ServerBlock::ParseTokens(std::string str, size_t n) throw (BadConfig)
                         "location",
                         "}",
                         "autoindex"};
-
     size_t i = 0;
     size_t j = 0;
     std::string word;
@@ -280,7 +296,7 @@ void ServerBlock::ServerCount() throw (BadConfig)
 // LOCATION METHODS:
 
 void ServerBlock::locations(std::string str, size_t n)throw (BadConfig){
-    Location *newloc = new Location();
+    Location *newloc = new Location(this->servers[n]._autoindex);
     this->servers[n].locs.push_back(*newloc);
     this->servers[n].loc_number+= 1;
     // std::cout << line_number << std::endl;

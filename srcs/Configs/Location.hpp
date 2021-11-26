@@ -9,6 +9,7 @@ class Location{
     public:
 
     Location();
+    Location(bool autoindex);
     ~Location();
 
     std::vector < std::string> locations;
@@ -28,7 +29,7 @@ class Location{
     bool next_loc;
     
     size_t ParseLocation(std::string file);
-    Location* newLocation() {Location *newloc = new Location(); return newloc;};
+    Location* newLocation(bool autoindex) {Location *newloc = new Location(autoindex); return newloc;};
     void ParseDirects(std::string buf);
     void ParseTokens(std::string str);
 

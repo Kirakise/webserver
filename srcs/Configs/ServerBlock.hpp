@@ -9,6 +9,15 @@
 #include "ServerConf.hpp"
 #include "Location.hpp"
 
+# define LISTEN 0
+# define NAME 1
+# define ROOT 2
+# define INDEX 3
+# define METHODS 4
+# define LOCATION 5
+# define ENDSCOPE 6
+# define AUTOINDEX 7
+
 class ServerConf;
 
 class ServerBlock
@@ -34,12 +43,12 @@ class ServerBlock
     
     void ParseTokens(std::string str, size_t n) throw (BadConfig);
 
-    void listen(std::string str, size_t n) throw (BadConfig);
-    void serverName(std::string str, size_t n) throw (BadConfig);
-    void root(std::string str, size_t n) throw (BadConfig);
-    void index(std::string str, size_t n) throw (BadConfig);
-    void allow_methods(std::string str, size_t n) throw (BadConfig);
-    void locations(std::string str, size_t n) throw (BadConfig);
+    void listen(std::string str, size_t n) throw (BadConfig); //0
+    void serverName(std::string str, size_t n) throw (BadConfig); //1
+    void root(std::string str, size_t n) throw (BadConfig); //2
+    void index(std::string str, size_t n) throw (BadConfig); //3
+    void allow_methods(std::string str, size_t n) throw (BadConfig); //4
+    void locations(std::string str, size_t n) throw (BadConfig); 
     void closed_scope(std::string str, size_t n) throw (BadConfig);
     void parse_autoindex(std::string str, size_t n) throw (BadConfig);
 
@@ -57,8 +66,6 @@ class ServerBlock
         }
         return true;
     }
-
-    
 
 };
 
