@@ -92,7 +92,7 @@ std::string getListingResponse(std::string path)
     std::string s = "res/listing.html";
     std::string ret(readFile(s) + "\n");
     size_t index = 0;
-    index = ret.find("/Users/rcaraway/webserver/", index);
+    index = ret.find(path, index);
     if (index != std::string::npos)
         ret.replace(index, 26, path);
     for (int i = 0; i < v.size(); i++)

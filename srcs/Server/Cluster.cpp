@@ -20,6 +20,7 @@ int Cluster::setup(){
         if (_fd_max < _servers[i].getFD())
             _fd_max = _servers[i].getFD();
     }
+    return (1);
 }
     
 void Cluster::run() {
@@ -32,7 +33,7 @@ void Cluster::run() {
 
         while (ret == 0)
         {
-            time.tv_sec = 20;
+            time.tv_sec = 1;
             time.tv_usec = 0;
             memcpy(&rd_set, &_fd_set, sizeof(_fd_set));
             FD_ZERO(&wr_set);
@@ -54,7 +55,7 @@ void Cluster::run() {
                     }
                 }
             }
-
+            s2:
             for (std::unordered_map<uint64_t, Server *>::iterator it = _serverMap.begin();
                 it != _serverMap.end(); it++)
                 {
@@ -71,9 +72,11 @@ void Cluster::run() {
                         {
                             _serverMap.erase(it->first);
                             FD_CLR(it->first, &rd_set);
+                            goto s2;
                         }
                     }
                 }
+            s1:
             for (int i = 0; i < _answer.size(); i++)
             {
                 if (FD_ISSET(_answer[i], &wr_set))
@@ -91,6 +94,7 @@ void Cluster::run() {
                         FD_CLR(_answer[i], &rd_set);
                         _serverMap.erase(_answer[i]);
                         _answer.erase(_answer.begin() + i);
+                        goto s1;
                     }
                 }
             }

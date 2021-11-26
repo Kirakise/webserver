@@ -26,7 +26,7 @@ class Location{
     bool next_loc;
     
     size_t ParseLocation(std::string file);
-    static Location* newLocation() {Location *newloc = new Location; return newloc;};
+    Location* newLocation() {Location *newloc = new Location(); return newloc;};
     void ParseDirects(std::string buf);
     void ParseTokens(std::string str);
 

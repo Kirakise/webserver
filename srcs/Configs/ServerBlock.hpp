@@ -9,6 +9,8 @@
 #include "ServerConf.hpp"
 #include "Location.hpp"
 
+class ServerConf;
+
 class ServerBlock
 {
     public:

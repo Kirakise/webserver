@@ -271,7 +271,7 @@ void ServerBlock::ServerCount() throw (BadConfig)
 // LOCATION METHODS:
 
 void ServerBlock::locations(std::string str, size_t n)throw (BadConfig){
-    Location *newloc = Location::newLocation();
+    Location *newloc = new Location();
     this->servers[n].locs.push_back(*newloc);
     this->servers[n].loc_number+= 1;
     // std::cout << line_number << std::endl;
