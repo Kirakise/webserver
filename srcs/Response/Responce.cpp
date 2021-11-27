@@ -161,7 +161,7 @@ void Response::GET()
 void Response::DELETE()
 {
     if ((pars.path = isIndexed(pars.path, Conf)) == "") { code = 403; return ; }
-    //if (!isAllowed("DELELTE", Conf.allowedMethods)) { code = 405; return ;}
+    if (!isAllowed("DELELTE", Conf.allowedMethods)) { code = 405; return ;}
     if (checkIfExists(pars.path))
     {
         std::remove(pars.path.c_str());
