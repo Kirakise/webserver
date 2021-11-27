@@ -102,6 +102,12 @@ int Server::recv(uint64_t socket)
 
     if(i != std::string::npos)
     {
+        if (_requests[socket].find("Expect: 100-continue") != std::string::npos)
+        {
+            _requests[socket].replace(_requests[socket].find("Expect: 100-continue"), 22, "");
+            ::send(socket, "HTTP/1.1 100 Continue\r\n", 22, 0);
+            return (1);
+        }
         if (_requests[socket].find("Content-Length: ") == std::string::npos)
         {
             if (_requests[socket].find("Transfer-Encoding: chunked") != std::string::npos)
@@ -114,7 +120,6 @@ int Server::recv(uint64_t socket)
             else
                 return (0);
         }
-        foo();
         size_t len = std::atoi(_requests[socket].substr(_requests[socket].find("Content-length: ") + 16, 10).c_str());
         if (_requests[socket].size() >= len + i + 4)
             return (0);
