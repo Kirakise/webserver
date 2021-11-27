@@ -125,10 +125,11 @@ void Response::Execute()
     if (pars.bad_responce) { code = 400; return ; }
     if (pars.method == "GET")
         GET();
-    else if (pars.method == "POST")
+    else if (pars.method == "POST" || pars.method == "PUT")
         POST();
     else if (pars.method == "DELETE")
         DELETE();
+    else { code = 405; return;}
 }
 
 bool isAllowed(const std::string &method, std::vector <std::string> &methods)
@@ -150,8 +151,9 @@ void Response::GET()
         Content = getListingResponse(pars.path);
     }
     else{
-        code = 200;
         Content = readFile(pars.path);
+        if (Content.size() == 0)
+            code = 204;
         Content_type = getType(pars.path);
     }
 }
@@ -159,12 +161,12 @@ void Response::GET()
 void Response::DELETE()
 {
     if ((pars.path = isIndexed(pars.path, Conf)) == "") { code = 403; return ; }
-    if (!isAllowed("DELELTE", Conf.allowedMethods)) { code = 405; return ;}
-    if (!checkIfExists(pars.path))
+    //if (!isAllowed("DELELTE", Conf.allowedMethods)) { code = 405; return ;}
+    if (checkIfExists(pars.path))
     {
         std::remove(pars.path.c_str());
         if(!std::ifstream(pars.path))
-            code = 200;
+            code = 204;
         else
             code = 403;
     }
@@ -178,7 +180,7 @@ void Response::POST()
     isIndexed(pars.path, Conf);
     if (!isAllowed("POST", Conf.allowedMethods)) { code = 405; return ;}
     if ((pars.path = isIndexed(pars.path, Conf)) == "") { code = 403; return ; }
-    if (!checkIfExists(pars.path))
+    if (checkIfExists(pars.path))
     {
         f.open(pars.path, std::ofstream::app);
         if (f.good()) {
@@ -246,6 +248,8 @@ std::string Response::getCodeText(uint16_t code)
         Content = readFile(s);
         return "Bad request";
     }
+    else if (code == 204)
+        return "No content";
     else if (code == 405){
         s = "res/405.html";
         Content_type = "text/html";

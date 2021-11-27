@@ -6,6 +6,8 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
+void foo(){}
+
 Server::Server(int port, std::string host) : _port(port) {
     inet_pton(AF_INET, host.c_str(), &_host);
 }
@@ -112,8 +114,8 @@ int Server::recv(uint64_t socket)
             else
                 return (0);
         }
-        
-        size_t len = std::stoi(_requests[socket].substr(_requests[socket].find("Content-length:") + 16));
+        foo();
+        size_t len = std::atoi(_requests[socket].substr(_requests[socket].find("Content-length: ") + 16, 10).c_str());
         if (_requests[socket].size() >= len + i + 4)
             return (0);
         else
