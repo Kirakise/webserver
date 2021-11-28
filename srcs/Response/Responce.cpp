@@ -129,7 +129,7 @@ void Response::Execute()
         POST();
     else if (pars.method == "DELETE")
         DELETE();
-    else { code = 405; return;}
+    else { code = 501; return;}
 }
 
 bool isAllowed(const std::string &method, std::vector <std::string> &methods)
@@ -153,7 +153,7 @@ void Response::GET()
     else{
         Content = readFile(pars.path);
         if (Content.size() == 0)
-            code = 204;
+           code = 200;
         Content_type = getType(pars.path);
     }
 }
@@ -256,6 +256,12 @@ std::string Response::getCodeText(uint16_t code)
         Content = readFile(s);
         return "Method not allowed";
     }
+    else if (code == 405){
+        s = "res/501.html";
+        Content_type = "text/html";
+        Content = readFile(s);
+        return "Not implemented";
+    }
     else return "Internal error";
 }
 
@@ -263,7 +269,7 @@ std::string Response::getResponse(){
     std::string ret;
 
     ret = "HTTP/1.1 " + std::to_string(code) + " " + getCodeText(code) + "\r\n";
-    if (Content != "")
+    if (Content != "" || pars.method == "GET")
     {
         ret.append("Content-Type: " + Content_type + "\r\n");
         ret.append("Content-Length: " + std::to_string(Content.size()) + "\r\n\r\n");

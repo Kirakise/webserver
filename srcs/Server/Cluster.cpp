@@ -10,6 +10,11 @@ Cluster::Cluster(std::vector <ServerConf> &d){
     }
 }
 
+void check_max_fd(int &fd)
+{
+
+}
+
 Cluster::~Cluster() {}
 
 int Cluster::setup(){
@@ -46,7 +51,6 @@ void Cluster::run() {
         }
 
         if (ret > 0){
-            s2:
             for (std::unordered_map<uint64_t, Server *>::iterator it = _serverMap.begin();
                 it != _serverMap.end(); it++)
                 {
@@ -60,14 +64,17 @@ void Cluster::run() {
                         }
                         else if (ret == -1)
                         {
+                            uint64_t tmpfd = it->first;
                             FD_CLR(it->first, &rd_set);
                             FD_CLR(it->first, &_fd_set);
                             _serverMap.erase(it->first);
-                            goto s2;
+                            if (tmpfd == _fd_max)
+                                _fd_max--;
+                            close(tmpfd);
+                            break ;
                         }
                     }
                 }
-            s1:
             for (int i = 0; i < _answer.size(); i++)
             {
                 if (FD_ISSET(_answer[i], &wr_set))
@@ -77,12 +84,16 @@ void Cluster::run() {
                     if (ret == 0)
                         _answer.erase(_answer.begin() + i);
                     else if (ret == -1)
-                    {   
+                    {
+                        uint64_t tmpfd = _answer[i];   
                         FD_CLR(_answer[i], &rd_set);
                         FD_CLR(_answer[i], &_fd_set);
                         _serverMap.erase(_answer[i]);
                         _answer.erase(_answer.begin() + i);
-                        goto s1;
+                        if (tmpfd == _fd_max)
+                                _fd_max--;
+                            close(tmpfd);
+                        break;
                     }
                 }
             }
