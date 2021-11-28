@@ -3,6 +3,7 @@
     
     #include "ServerBlock.hpp"
     #include "Location.hpp"
+    #include <map>
     
     class ServerConf
     {
@@ -33,6 +34,7 @@
         bool open_scope;
         std::vector < Location > locs;
         size_t loc_number;
+        std::map <int, std::string> error_page;
     
         uint16_t getPort() { return _port; }
         std::string getHost() { return host; }

@@ -17,7 +17,7 @@ class Location{
     std::vector < std::string > allowedMethods;
     std::vector <std::string> indexes;
     std::string _cgi_pass;
-    size_t clientBodyBufferSize;
+    long long clientBodyBufferSize;
     std::vector < Location > locs;
     bool autoindex;
 

@@ -4,7 +4,7 @@
 
 extern size_t line_number;
 
-Location::Location() : autoindex(false){};
+Location::Location() :  autoindex(false), clientBodyBufferSize(-1) {};
 
 Location::Location(bool autoindex) : autoindex(autoindex) {};
     
@@ -127,7 +127,7 @@ void Location::ParseTokens(std::string str){
                         "cgi_pass",
                         "}",
                         "location",
-                        "client_body_buffer_size",
+                        "client_max_body_size",
                         "index",
                         "autoindex"};
 
@@ -168,7 +168,7 @@ void Location::client_body_bufsize(std::string str){
         i++;
     }
     std::string word;
-    word = "client_body_buffer_size";
+    word = "client_max_body_size";
     i += word.length() + 1;
     word = "";
     while (str[i] == ' ' && i < str.length())
