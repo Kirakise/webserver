@@ -5,6 +5,8 @@
 #include <unordered_map>
 #include <cstdio>
 
+CodeToStr cts;
+
 int writeContent(std::string content, std::string path)
 {
 	std::ofstream	file;
@@ -229,53 +231,15 @@ std::string getType(std::string path)
 
 std::string Response::getCodeText(uint16_t code)
 {
-    std::string s;
     if (code == 200)
         return "OK";
-    else if (code == 404){
-        s = "res/404.html";
-        Content_type = "text/html";
-        Content = readFile(s);
-        return "Not found";
-    }
-    else if (code == 403){
-        s = "res/403.html";
-        Content_type = "text/html";
-        Content = readFile(s);
-        return "Forbidden";
-    }
-    else if (code == 400){
-        s = "res/400.html";
-        Content_type = "text/html";
-        Content = readFile(s);
-        return "Bad request";
-    }
-    else if (code == 204)
-        return "No content";
-    else if (code == 405){
-        s = "res/405.html";
-        Content_type = "text/html";
-        Content = readFile(s);
-        return "Method not allowed";
-    }
-    else if (code == 405){
-        s = "res/501.html";
-        Content_type = "text/html";
-        Content = readFile(s);
-        return "Not implemented";
-    }
-    else if (code == 413) {
-        s = "res/413.html";
-        Content_type = "text/html";
-        Content = readFile(s);
-        return "Payload Too Large";
-    }
     else {
-        code = 500;
-        s = "res/500.html";
-        Content_type = "text/html";
-        Content = readFile(s);
-        return "Internal error";
+        if (!checkIfExists(Conf.error_page[code])) {
+            Conf.error_page[code] = "res/" + std::to_string(code) + ".html"; 
+        }
+        Content_type = getType(Conf.error_page[code]);
+        Content = readFile(Conf.error_page[code]);
+        return cts.error_messages[code];
     }
 }
 

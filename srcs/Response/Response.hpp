@@ -30,4 +30,20 @@ class Response{
     std::string getResponse();
 };
 
+class CodeToStr{
+    public:
+    CodeToStr() {
+        error_messages[400] = "Bad Request";
+        error_messages[403] = "Forbidden";
+        error_messages[404] = "Not Found";
+        error_messages[405] = "Method Not Allowed";
+        error_messages[413] = "Payload Too Large";
+        error_messages[500] = "Internal Error";
+        error_messages[501] = "Not Implemented";
+    }
+    ~CodeToStr(){}
+    std::unordered_map <int, std::string> error_messages;
+
+};
+
 std::string getType(std::string path);
