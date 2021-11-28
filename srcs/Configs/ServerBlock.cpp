@@ -229,16 +229,47 @@ void ServerBlock::closed_scope(std::string str, size_t n)throw (BadConfig){
     this->servers[n].open_scope = false;
 }
 
+void ServerBlock::parse_error_page(std::string str, size_t n) throw (BadConfig){
+    size_t i = 0;
+    while (str[i] == ' ' || str[i] == '\t')
+    {
+        i++;
+    }
+    std::string word;
+    word = "error_page";
+    i += word.length() + 1;
+    word = "";
+    while (str[i] == ' ' && i < str.length())
+        i++;
+    while (i < str.length() && isdigit(str[i])){
+        word+=str[i];
+        i++;
+    }
+    if (i == str.length())
+        throw ServerBlock::BadConfig();
+    int k = atoi(word.c_str());
+    word = "";
+    while (str[i] == ' ' && i < str.length())
+        i++;
+    while (i < str.length() && str[i] != ' ' && str[i] != '\t'){
+        word+=str[i];
+        i++;
+    }
+    std::cout << "!!!!shdgfhsgdhsgdfhgdsfh " << word << std::endl;
+    this->servers[n].error_page[k] = word;
+}
+
 void ServerBlock::ParseTokens(std::string str, size_t n) throw (BadConfig)
 {
-    std::string types[8] = {"listen",
+    std::string types[9] = {"listen",
                         "server_name",
                         "root",
                         "index",
                         "allow_methods",
                         "location",
                         "}",
-                        "autoindex"};
+                        "autoindex",
+                        "error_page"};
     size_t i = 0;
     size_t j = 0;
     std::string word;
@@ -251,23 +282,24 @@ void ServerBlock::ParseTokens(std::string str, size_t n) throw (BadConfig)
         word+=str[i];
         i++;
     }
-    while (word != types[j] && j < 8)
+    while (word != types[j] && j < 9)
         j++;
-    if (j == 8)
+    if (j == 9)
         throw ServerBlock::BadConfig();
     typedef void(ServerBlock::*Parse)(std::string str, size_t n);
-    Parse word_parse[8] = {&ServerBlock::listen,
+    Parse word_parse[9] = {&ServerBlock::listen,
                      &ServerBlock::serverName, 
                      &ServerBlock::root, 
                      &ServerBlock::index, 
                      &ServerBlock::allow_methods, 
                      &ServerBlock::locations, 
                      &ServerBlock::closed_scope,
-                     &ServerBlock::parse_autoindex};
+                     &ServerBlock::parse_autoindex,
+                     &ServerBlock::parse_error_page};
     (this->*word_parse[j])(str, n);
 }
 
- 
+
 
 void ServerBlock::ServerCount() throw (BadConfig)
 {

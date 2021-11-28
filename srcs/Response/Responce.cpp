@@ -116,6 +116,7 @@ std::string isIndexed(std::string &path, ServerConf &conf, Location *l = 0)
     if (l != 0){
         conf.allowedMethods = l->allowedMethods;
         conf._cgi = l->_cgi_pass;
+        conf.clientBodySize = l->clientBodyBufferSize;
     }
     return path;
 }
@@ -180,6 +181,7 @@ void Response::POST()
     isIndexed(pars.path, Conf);
     if (!isAllowed("POST", Conf.allowedMethods)) { code = 405; return ;}
     if ((pars.path = isIndexed(pars.path, Conf)) == "") { code = 403; return ; }
+    if (Conf.clientBodySize != -1 && Conf.clientBodySize > pars.body.size()) { code = 413; return;}
     if (checkIfExists(pars.path))
     {
         f.open(pars.path, std::ofstream::app);
@@ -262,7 +264,19 @@ std::string Response::getCodeText(uint16_t code)
         Content = readFile(s);
         return "Not implemented";
     }
-    else return "Internal error";
+    else if (code == 413) {
+        s = "res/413.html";
+        Content_type = "text/html";
+        Content = readFile(s);
+        return "Payload Too Large";
+    }
+    else {
+        code = 500;
+        s = "res/500.html";
+        Content_type = "text/html";
+        Content = readFile(s);
+        return "Internal error";
+    }
 }
 
 std::string Response::getResponse(){
