@@ -42,6 +42,7 @@ int main()
         std::cerr << "Fix config pls, i'm not working with this jewish thing" << std::endl;
         return (0);
     }
+    
     FixBlock(sv);
     Cluster cl(sv.servers);
     cl.setup();

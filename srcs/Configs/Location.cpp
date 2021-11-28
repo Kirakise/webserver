@@ -9,7 +9,13 @@ Location::Location() : autoindex(false){};
 Location::Location(bool autoindex) : autoindex(autoindex) {};
     
 Location::~Location(){
-
+    // this->allowedMethods.clear();
+    // this->indexes.clear();
+    // this->locations.clear();
+    // this->locs.clear();
+    // for (size_t i = 0; i < locs.size(); i++){
+    //     delete locs[i];
+    // }
 }
 
 void Location::ParseDirects(std::string buf){
@@ -198,9 +204,10 @@ void Location::cgi_pass(std::string str){
 
 void Location::next_location(std::string str){
     this->next_loc = true;
-    Location *loc = newLocation(this->autoindex);
+    // Location *loc = newLocation(this->autoindex);
+    Location loc(this->autoindex);
     // loc->ParseLocation(this->filename);
-    this->locs.push_back(*loc);
+    this->locs.push_back(loc);
     this->locs[this->locs.size() - 1].ParseLocation(this->filename);
 }
 

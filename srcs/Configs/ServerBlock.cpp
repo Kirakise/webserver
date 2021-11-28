@@ -35,7 +35,9 @@ void ServerBlock::SplitServers() throw (BadConfig)
         n++;
         if (buf == "server {")
         {
-            this->servers.push_back(*this->NewServer());
+            ServerConf serv;
+            // this->servers.push_back(*this->NewServer());
+            this->servers.push_back(serv);
             this->serverCount++;
             this->servers[serverCount - 1].open_scope = true;
         }
@@ -296,8 +298,9 @@ void ServerBlock::ServerCount() throw (BadConfig)
 // LOCATION METHODS:
 
 void ServerBlock::locations(std::string str, size_t n)throw (BadConfig){
-    Location *newloc = new Location(this->servers[n]._autoindex);
-    this->servers[n].locs.push_back(*newloc);
+    // Location *newloc = new Location(this->servers[n]._autoindex);
+    Location newloc(this->servers[n]._autoindex);
+    this->servers[n].locs.push_back(newloc);
     this->servers[n].loc_number+= 1;
     // std::cout << line_number << std::endl;
     this->servers[n].locs[this->servers[n].loc_number - 1].ParseLocation(this->file);
