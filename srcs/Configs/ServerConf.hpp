@@ -9,7 +9,7 @@
         public:
 
 
-        ServerConf() : _port(80), host("127.0.0.1"), _autoindex(false), loc_number(0){
+        ServerConf() : _port(80), host("127.0.0.1"), _autoindex(false), clientBodySize(-1), loc_number(0){
             size_t i = 0;
             while (i < 8){
                 this->type_index[i] = false;
@@ -31,6 +31,7 @@
         std::vector <std::string> allowedMethods;
         bool ready;
         bool open_scope;
+        long long clientBodySize;
         std::vector < Location > locs;
         size_t loc_number;
     
