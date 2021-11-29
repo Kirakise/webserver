@@ -259,9 +259,27 @@ void ServerBlock::parse_error_page(std::string str, size_t n) throw (BadConfig){
     this->servers[n].error_page[k] = word;
 }
 
+ void ServerBlock::parse_redirect(std::string str, size_t n) throw (BadConfig){
+      if (this->servers[n].type_index[REDIR] == true)
+        throw ServerBlock::BadConfig();
+    std::string word;
+    word = "redirect";
+    size_t i = word.length() + 1;
+    while (str[i] == ' ' || str[i] == '\t')
+        i++;
+    word = "";
+    while (i < str.length()){
+        word += str[i];
+        i++;
+    }
+    this->servers[n].redir = word;
+    this->servers[n].type_index[REDIR] = true;
+    std::cout << "**************" << this->servers[n].redir << std::endl;
+ }
+
 void ServerBlock::ParseTokens(std::string str, size_t n) throw (BadConfig)
 {
-    std::string types[9] = {"listen",
+    std::string types[10] = {"listen",
                         "server_name",
                         "root",
                         "index",
@@ -269,7 +287,8 @@ void ServerBlock::ParseTokens(std::string str, size_t n) throw (BadConfig)
                         "location",
                         "}",
                         "autoindex",
-                        "error_page"};
+                        "error_page",
+                        "redirect"};
     size_t i = 0;
     size_t j = 0;
     std::string word;
@@ -282,12 +301,12 @@ void ServerBlock::ParseTokens(std::string str, size_t n) throw (BadConfig)
         word+=str[i];
         i++;
     }
-    while (word != types[j] && j < 9)
+    while (word != types[j] && j < 10)
         j++;
-    if (j == 9)
+    if (j == 10)
         throw ServerBlock::BadConfig();
     typedef void(ServerBlock::*Parse)(std::string str, size_t n);
-    Parse word_parse[9] = {&ServerBlock::listen,
+    Parse word_parse[10] = {&ServerBlock::listen,
                      &ServerBlock::serverName, 
                      &ServerBlock::root, 
                      &ServerBlock::index, 
@@ -295,7 +314,8 @@ void ServerBlock::ParseTokens(std::string str, size_t n) throw (BadConfig)
                      &ServerBlock::locations, 
                      &ServerBlock::closed_scope,
                      &ServerBlock::parse_autoindex,
-                     &ServerBlock::parse_error_page};
+                     &ServerBlock::parse_error_page,
+                     &ServerBlock::parse_redirect};
     (this->*word_parse[j])(str, n);
 }
 

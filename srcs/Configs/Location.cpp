@@ -120,7 +120,7 @@ void Location::parse_index(std::string str){
 }
 
 void Location::ParseTokens(std::string str){
-    std::string types[8] = {
+    std::string types[9] = {
                         "root",
                         // "index",
                         "allow_methods",
@@ -129,7 +129,8 @@ void Location::ParseTokens(std::string str){
                         "location",
                         "client_max_body_size",
                         "index",
-                        "autoindex"};
+                        "autoindex", 
+                        "redirect"};
 
     size_t i = 0;
     size_t j = 0;
@@ -143,12 +144,12 @@ void Location::ParseTokens(std::string str){
         word+=str[i];
         i++;
     }
-    while (word != types[j] && j < 8)
+    while (word != types[j] && j < 9)
         j++;
-    if (j == 8)
+    if (j == 9)
         throw ServerBlock::BadConfig();
     typedef void(Location::*Parse)(std::string str);
-    Parse word_parse[8] = {&Location::root, 
+    Parse word_parse[9] = {&Location::root, 
                     //  &Location::index, 
                      &Location::allow_methods,
                      &Location::cgi_pass,
@@ -156,7 +157,8 @@ void Location::ParseTokens(std::string str){
                      &Location::next_location,
                      &Location::client_body_bufsize,
                      &Location::parse_index,
-                     &Location::parse_autoindex};
+                     &Location::parse_autoindex,
+                     &Location::parse_redirect};
     std::cout << line_number << std::endl;
     (this->*word_parse[j])(str);
 }
@@ -227,6 +229,24 @@ void Location::root(std::string str){
     }
     this->_root = word == "" ? this->_root : word;
     std::cout << this->_root << std::endl;
+}
+
+void Location::parse_redirect(std::string str){
+    size_t i = 0;
+    while ((str[i] == ' ' || str[i] == '\t') && i < str.length())
+        i++;
+    std::string word;
+    word = "redirect";
+    i += word.length() + 1;
+    while (str[i] == ' ' || str[i] == '\t')
+        i++;
+    word = "";
+    while (i < str.length()){
+        word += str[i];
+        i++;
+    }
+    this->redir = word == "" ? this->redir : word;
+    std::cout << "@@@@@@@@@@@@@" << this->redir << std::endl;
 }
 
 void Location::index(std::string str){
