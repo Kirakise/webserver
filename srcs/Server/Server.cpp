@@ -97,6 +97,7 @@ int Server::recv(uint64_t socket)
     }
 
     _requests[socket].append(buf);
+        std::cout << _requests[socket];
 
     size_t i = _requests[socket].find("\r\n\r\n");
 

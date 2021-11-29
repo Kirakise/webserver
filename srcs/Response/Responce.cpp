@@ -119,8 +119,12 @@ std::string isIndexed(std::string &path, ServerConf &conf, Location *l = 0)
         conf.allowedMethods = l->allowedMethods;
         conf._cgi = l->_cgi_pass;
         conf.clientBodySize = l->clientBodyBufferSize;
+        conf.redir = l->redir;
     }
-    return path;
+    if (conf.redir.size())
+        return ("123");
+    else
+        return path;
 }
 
 void Response::Execute()
@@ -146,6 +150,7 @@ bool isAllowed(const std::string &method, std::vector <std::string> &methods)
 void Response::GET()
 {
     if ((pars.path = isIndexed(pars.path, Conf)) == "") { code = 403; return ; }
+    if (Conf.redir != "") { code = 301; return ; }
     if (!isAllowed("GET", Conf.allowedMethods)) { code = 405; return ;}
     if (!checkIfExists(pars.path)) { code = 404; return ; }
     if (isDirectory(pars.path)){
@@ -164,6 +169,7 @@ void Response::GET()
 void Response::DELETE()
 {
     if ((pars.path = isIndexed(pars.path, Conf)) == "") { code = 403; return ; }
+    if (Conf.redir != "") { code = 301; return ; }
     if (!isAllowed("DELELTE", Conf.allowedMethods)) { code = 405; return ;}
     if (checkIfExists(pars.path))
     {
@@ -181,6 +187,7 @@ void Response::POST()
 {
     std::ofstream f;
     isIndexed(pars.path, Conf);
+    if (Conf.redir != "") { code = 301; return ; }
     if (!isAllowed("POST", Conf.allowedMethods)) { code = 405; return ;}
     if ((pars.path = isIndexed(pars.path, Conf)) == "") { code = 403; return ; }
     if (Conf.clientBodySize != -1 && Conf.clientBodySize > pars.body.size()) { code = 413; return;}
@@ -233,6 +240,11 @@ std::string Response::getCodeText(uint16_t code)
 {
     if (code == 200)
         return "OK";
+    else if (code == 301)
+    {
+        headers.push_back("Location: " + Conf.redir);
+        return cts.error_messages[code];
+    }
     else {
         if (!checkIfExists(Conf.error_page[code])) {
             Conf.error_page[code] = "res/" + std::to_string(code) + ".html"; 
@@ -247,6 +259,8 @@ std::string Response::getResponse(){
     std::string ret;
 
     ret = "HTTP/1.1 " + std::to_string(code) + " " + getCodeText(code) + "\r\n";
+    for (int i = 0; i < headers.size(); i++)
+        ret.append(headers[i] + "\r\n");
     if (Content != "" || pars.method == "GET")
     {
         ret.append("Content-Type: " + Content_type + "\r\n");

@@ -1,6 +1,5 @@
 #include "../includes/Ultimate.hpp"
 size_t line_number;
-
 void FixLock(ServerConf &sc, Location *l = 0, std::string curroot = "")
 {
     if (curroot == "")
