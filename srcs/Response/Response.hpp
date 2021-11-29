@@ -33,7 +33,7 @@ class Response{
 class CodeToStr{
     public:
     CodeToStr() {
-        error_messages[301] = "Moved Permanently";
+        error_messages[307] = "Temporary Redirect";
         error_messages[400] = "Bad Request";
         error_messages[403] = "Forbidden";
         error_messages[404] = "Not Found";

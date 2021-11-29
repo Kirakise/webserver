@@ -21,7 +21,8 @@ int Cluster::setup(){
     FD_ZERO(&_fd_set);
     for (int i = 0; i < _servers.size(); i++)
     {
-        _servers[i].setServer();
+        if( _servers[i].setServer() == -1)
+            return (-1);
         FD_SET(_servers[i].getFD(), &_fd_set);
         if (_fd_max < _servers[i].getFD())
             _fd_max = _servers[i].getFD();

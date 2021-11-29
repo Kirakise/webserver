@@ -64,14 +64,14 @@ std::string isIndexed(std::string &path, ServerConf &conf, Location *l = 0)
     if (l == 0) //Если мы не внутри location
         for (int i = 0; i < conf.locs.size(); i++)
         {
-            if (getPath(path).find(conf.locs[i].locations[0]) != std::string::npos &&
+            if (path.find(conf.locs[i].locations[0]) != std::string::npos &&
             (loc == -1 || conf.locs[i].locations[0].size() > conf.locs[loc].locations[0].size()))
                 loc = i;
         }
     else // Если мы смотрим другой локейшн
         for (int i = 0; i < l->locs.size(); i++)
         {
-            if (getPath(path).find(l->locs[i].locations[0]) != std::string::npos &&
+            if (path.find(l->locs[i].locations[0]) != std::string::npos &&
             (loc == -1 || l->locs[i].locations[0].size() > l->locs[loc].locations[0].size()))
                 loc = i;
         }
@@ -150,7 +150,7 @@ bool isAllowed(const std::string &method, std::vector <std::string> &methods)
 void Response::GET()
 {
     if ((pars.path = isIndexed(pars.path, Conf)) == "") { code = 403; return ; }
-    if (Conf.redir != "") { code = 301; return ; }
+    if (Conf.redir != "") { code = 307; return ; }
     if (!isAllowed("GET", Conf.allowedMethods)) { code = 405; return ;}
     if (!checkIfExists(pars.path)) { code = 404; return ; }
     if (isDirectory(pars.path)){
@@ -160,8 +160,7 @@ void Response::GET()
     }
     else{
         Content = readFile(pars.path);
-        if (Content.size() == 0)
-           code = 200;
+        code = 200;
         Content_type = getType(pars.path);
     }
 }
@@ -169,7 +168,7 @@ void Response::GET()
 void Response::DELETE()
 {
     if ((pars.path = isIndexed(pars.path, Conf)) == "") { code = 403; return ; }
-    if (Conf.redir != "") { code = 301; return ; }
+    if (Conf.redir != "") { code = 307; return ; }
     if (!isAllowed("DELELTE", Conf.allowedMethods)) { code = 405; return ;}
     if (checkIfExists(pars.path))
     {
@@ -187,7 +186,7 @@ void Response::POST()
 {
     std::ofstream f;
     isIndexed(pars.path, Conf);
-    if (Conf.redir != "") { code = 301; return ; }
+    if (Conf.redir != "") { code = 307; return ; }
     if (!isAllowed("POST", Conf.allowedMethods)) { code = 405; return ;}
     if ((pars.path = isIndexed(pars.path, Conf)) == "") { code = 403; return ; }
     if (Conf.clientBodySize != -1 && Conf.clientBodySize > pars.body.size()) { code = 413; return;}
@@ -240,7 +239,7 @@ std::string Response::getCodeText(uint16_t code)
 {
     if (code == 200)
         return "OK";
-    else if (code == 301)
+    else if (code == 307)
     {
         headers.push_back("Location: " + Conf.redir);
         return cts.error_messages[code];

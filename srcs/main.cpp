@@ -44,7 +44,7 @@ int main()
     
     FixBlock(sv);
     Cluster cl(sv.servers);
-    cl.setup();
-    cl.run();
+    if (cl.setup() != -1)
+        cl.run();
     cl.clear();
 }
