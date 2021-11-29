@@ -5,12 +5,14 @@
     #include "Location.hpp"
     #include <unordered_map>
     
+    class ServerBlock;
+
     class ServerConf
     {
         public:
 
 
-        ServerConf() : _port(80), host("127.0.0.1"), _autoindex(false), clientBodySize(-1), loc_number(0){
+        ServerConf(ServerBlock *p) : _port(80), host("127.0.0.1"), _autoindex(false), clientBodySize(-1), loc_number(0), parent(p){
             size_t i = 0;
             while (i < 9){
                 this->type_index[i] = false;
@@ -44,6 +46,7 @@
         size_t loc_number;
         std::unordered_map <int, std::string> error_page;
         std::string redir;
+        ServerBlock *parent;
     
         uint16_t getPort() { return _port; }
         std::string getHost() { return host; }

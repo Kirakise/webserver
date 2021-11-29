@@ -8,9 +8,9 @@
 
 void foo(){}
 
-Server::Server(int port, std::string host) : _port(port) {
-    inet_pton(AF_INET, host.c_str(), &_host);
-}
+// Server::Server(int port, std::string host) : _port(port) {
+//     inet_pton(AF_INET, host.c_str(), &_host);
+// }
 
 Server::~Server() {}
 
@@ -154,7 +154,7 @@ void Server::doRecv(uint64_t socket)
     
     if (_requests[socket] != "")
     {
-        Response p(Parser(_requests[socket]), _conf);
+        Response p(Parser(_requests[socket], *_conf.parent), _conf);
         p.Execute();
         _requests[socket] = p.getResponse();
     }

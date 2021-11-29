@@ -16,7 +16,7 @@ void ServerBlock::ParseAll(){
 }
 
 ServerConf *ServerBlock::NewServer(){
-    ServerConf *server = new ServerConf();
+    ServerConf *server = new ServerConf(this);
     return server;
 }
 
@@ -35,7 +35,7 @@ void ServerBlock::SplitServers() throw (BadConfig)
         n++;
         if (buf == "server {")
         {
-            ServerConf serv;
+            ServerConf serv(this);
             // this->servers.push_back(*this->NewServer());
             this->servers.push_back(serv);
             this->serverCount++;

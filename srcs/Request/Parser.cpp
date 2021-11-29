@@ -2,14 +2,14 @@
 #include <string>
 #include <iostream>
 
-
-Parser::Parser(std::string request) : request(request), bad_responce(false) {
+Parser::Parser(std::string request, ServerBlock sv) : request(request), bad_responce(false), sv(sv) {
     this->splitRequest();
     // if (this->body == "")
     //     std::cout << "no content\n";
     this->parseLines();
     this->parseStartLine();
     this->parseHeaders();
+    this->find_index();
 }
 
 Parser::~Parser(){}
@@ -118,7 +118,7 @@ void Parser::parseHeaders(){
         this->headers.push_back(p1);
         n++;
     }
-    //printVector(this->headers);
+    // printVector(this->headers);
 }
 
 // void Parser::printVector( std::vector<std::pair<std::string, std::list<std::string> > > vec){
@@ -154,3 +154,63 @@ std::string Parser::trimLine(std::string str, std::string totrim)
 //     // parser.parseStartLine();
 //     // parser.parseHeaders();
 // }
+
+void Parser::find_host_port(){
+    size_t f;
+    f = this->request.find("Host: ");
+    if (f == std::string::npos){
+        bad_responce = true;
+        return;
+    }
+    std::string word;
+    f+=6;
+    while (this->request[f] == ' ')
+        f++;
+    while (this->request[f] != ':' && f < this->request.length())
+    {
+        word+=this->request[f];
+        f++;
+    }
+    if (this->request[f] != ':' && f == this->request.length())
+    {
+        this->host_name = word;
+        this->port = 80;
+        return;
+    }
+    f++;
+    this->host_name = word;
+    word = "";
+    while (f < this->request.length())
+    {
+        word += this->request[f];
+        f++;
+    }
+    this->port = atoi(word.c_str());
+}
+
+void Parser::find_index(){
+    find_host_port();
+    size_t i = 0;
+    std::vector<int> indexes;
+    while (i < sv.servers.size())
+    {
+        if (sv.servers[i]._port == this->port)
+            indexes.push_back(i);
+        i++;
+    }
+    if (indexes.size() == 0)
+        this->server_index = 0;
+    if (indexes.size() == 1)
+        this->server_index = indexes[0];
+    i = 0;
+    while (i < indexes.size())
+    {
+        if (this->host_name == sv.servers[indexes[i]].host)
+        {
+            this->server_index = indexes[i];
+            return ;
+        }
+        i++;
+    }
+    this->server_index = indexes[0];
+}
