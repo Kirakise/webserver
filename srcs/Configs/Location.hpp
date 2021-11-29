@@ -20,6 +20,7 @@ class Location{
     long long clientBodyBufferSize;
     std::vector < Location > locs;
     bool autoindex;
+    std::string redir;
 
 
 
@@ -42,6 +43,7 @@ class Location{
     void client_body_bufsize(std::string str);
     void parse_index(std::string str);
     void parse_autoindex(std::string str);
+    void parse_redirect(std::string str);
 
 };
 
