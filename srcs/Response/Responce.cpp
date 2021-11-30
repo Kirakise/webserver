@@ -100,7 +100,7 @@ std::string isIndexed(std::string &path, ServerConf &conf, Location *l = 0)
         }
         else {
             if (l->autoindex) {
-                path = conf._root + getFilePathInLoc(path, l->locations[0]);
+                path = l->_root + getFilePathInLoc(path, l->locations[0]);
                 goto end;
             }
             else
@@ -188,8 +188,8 @@ void Response::POST()
     isIndexed(pars.path, Conf);
     if (Conf.redir != "") { code = 307; return ; }
     if (!isAllowed("POST", Conf.allowedMethods)) { code = 405; return ;}
-    if ((pars.path = isIndexed(pars.path, Conf)) == "") { code = 403; return ; }
-    if (Conf.clientBodySize != -1 && Conf.clientBodySize > pars.body.size()) { code = 413; return;}
+    //if ((pars.path = isIndexed(pars.path, Conf)) == "") { code = 403; return ; }
+    if (Conf.clientBodySize != -1 && Conf.clientBodySize < pars.body.size()) { code = 413; return;}
     if (checkIfExists(pars.path))
     {
         f.open(pars.path, std::ofstream::app);
@@ -268,6 +268,5 @@ std::string Response::getResponse(){
     }
     else 
         ret.append("\r\n");
-    std::cout << ret;
     return ret;
 }

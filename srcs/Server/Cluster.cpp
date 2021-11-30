@@ -2,27 +2,32 @@
 #include <sys/select.h>
 #include <iostream>
 #include <unistd.h>
+#include <unordered_map>
 
-Cluster::Cluster(std::vector <ServerConf> &d){
+Cluster::Cluster(std::vector <ServerConf> &d) : _fd_max(0){
     for (int i = 0; i < d.size(); i++){
         Server s(d[i]);
         _servers.push_back(s);
     }
 }
 
-void check_max_fd(int &fd)
+bool checkVec(std::vector <int> &d, int fd)
 {
-
+    for (int i = 0; i < d.size(); i++)
+        if (fd == d[i])
+            return true;
+        return false;
 }
 
 Cluster::~Cluster() {}
 
 int Cluster::setup(){
     FD_ZERO(&_fd_set);
+    std::vector <int> ser;
     for (int i = 0; i < _servers.size(); i++)
     {
-        if( _servers[i].setServer() == -1)
-            return (-1);
+        if (_servers[i].setServer() == -1)
+            continue;
         FD_SET(_servers[i].getFD(), &_fd_set);
         if (_fd_max < _servers[i].getFD())
             _fd_max = _servers[i].getFD();

@@ -76,7 +76,7 @@ void Server::getAllChunks(uint64_t socket) {
 		chunksize = strtol(subchunk.c_str(), NULL, 16);
 	}
 
-	_requests[socket] = head + "\r\n\r\n" + body + "\r\n\r\n";
+	_requests[socket] = head + "\r\n\r\n" + body;
 }
 
 int Server::recv(uint64_t socket)
@@ -85,7 +85,7 @@ int Server::recv(uint64_t socket)
     int ret;
 
     ret = ::recv(socket, &buf, READ_SIZE - 1, 0);
-
+    buf[ret] = 0;
     if (ret <= 0)
     {
         closeSocket(socket);
@@ -97,12 +97,22 @@ int Server::recv(uint64_t socket)
     }
 
     _requests[socket].append(buf);
-        std::cout << _requests[socket];
 
     size_t i = _requests[socket].find("\r\n\r\n");
+    size_t pos = 0;
+    std::string bound("");
 
     if(i != std::string::npos)
     {
+        if ((pos = _requests[socket].find("Content-Type: multipart/form-data; boundary=")) != std::string::npos)
+        {
+            bound = _requests[socket].substr(pos);
+            pos = bound.find("\r\n") - 45;
+            bound = "---" + bound.substr(45, pos) + "--";
+            if (_requests[socket].find(bound) == std::string::npos)
+                return (1);
+            return (0);
+        }
         if (_requests[socket].find("Content-Length: ") == std::string::npos)
         {
             if (_requests[socket].find("Transfer-Encoding: chunked") != std::string::npos)
@@ -145,6 +155,26 @@ int Server::send(uint64_t socket)
     }
 }
 
+void Server::parseMultipart(uint64_t socket)
+{
+    std::string headers = "";
+    std::string body = "";
+    std::string bound = "";
+    size_t pos;
+    pos = _requests[socket].find("Content-Type: multipart/form-data; boundary=");
+    headers = _requests[socket].substr(0, pos);
+    bound = _requests[socket].substr(pos + 45);
+    pos = bound.find("\r\n");
+    bound = "---" + bound.substr(0, pos);
+    pos = _requests[socket].find(bound + "\r\n");
+    body = _requests[socket].substr(pos + bound.size() + 2);
+    pos = body.find("\r\n\r\n");
+    headers += body.substr(0, pos);
+    body = body.substr(pos + 4);
+    pos = body.find("\r\n" + bound + "--");
+    body = body.substr(0, pos);
+    _requests[socket] = headers + "\r\n\r\n" + body;
+}
 
 void Server::doRecv(uint64_t socket)
 {
@@ -152,9 +182,13 @@ void Server::doRecv(uint64_t socket)
         _requests[socket].find("Transfer-Encoding: chunked") < _requests[socket].find("\r\n\r\n"))
         this->getAllChunks(socket);
     
+    if (_requests[socket].find("Content-Type: multipart/form-data; boundary="))
+        this->parseMultipart(socket);
+    
     if (_requests[socket] != "")
     {
-        Response p(Parser(_requests[socket], *_conf.parent), _conf);
+        Parser pars(_requests[socket], *_conf.parent);
+        Response p(Parser(pars), _conf.parent->servers[pars.server_index]);
         p.Execute();
         _requests[socket] = p.getResponse();
     }
