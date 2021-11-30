@@ -6,7 +6,7 @@
 #include <netinet/in.h>
 #include "Ultimate.hpp"
 
-#define READ_SIZE 1024
+#define READ_SIZE 2048
 
 class Server{
     public:
@@ -23,7 +23,8 @@ class Server{
     void closeServer(void);
     void getAllChunks(uint64_t socket);
     int64_t getFD(void);
-
+    void getMultipartData(uint64_t socket);
+    void parseMultipart(uint64_t socket);
 
     private:
     std::unordered_map<uint64_t, std::string> _requests;

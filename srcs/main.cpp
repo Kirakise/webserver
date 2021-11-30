@@ -32,10 +32,12 @@ void FixBlock(ServerBlock &sv)
             FixLock(sv.servers[i]);
 }
 
-int main()
+int main(int argc, char **argv)
 {
+    if (argc == 2)
+    {
     ServerBlock sv;
-    sv.file = "configs/ex.conf";
+    sv.file = argv[1];
     sv.ParseAll();
     if (sv.badConfig){
         std::cerr << "Fix config pls, i'm not working with this jewish thing" << std::endl;
@@ -47,4 +49,8 @@ int main()
     if (cl.setup() != -1)
         cl.run();
     cl.clear();
+    }
+    else
+        std::cout << "No conf file";
+    return (0);
 }
