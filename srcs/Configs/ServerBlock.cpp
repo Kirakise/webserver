@@ -279,7 +279,7 @@ void ServerBlock::parse_error_page(std::string str, size_t n) throw (BadConfig){
 
 void ServerBlock::ParseTokens(std::string str, size_t n) throw (BadConfig)
 {
-    std::string types[10] = {"listen",
+    std::string types[11] = {"listen",
                         "server_name",
                         "root",
                         "index",
@@ -288,7 +288,8 @@ void ServerBlock::ParseTokens(std::string str, size_t n) throw (BadConfig)
                         "}",
                         "autoindex",
                         "error_page",
-                        "redirect"};
+                        "redirect",
+                        "cgi_pass"};
     size_t i = 0;
     size_t j = 0;
     std::string word;
@@ -301,12 +302,12 @@ void ServerBlock::ParseTokens(std::string str, size_t n) throw (BadConfig)
         word+=str[i];
         i++;
     }
-    while (word != types[j] && j < 10)
+    while (word != types[j] && j < 11)
         j++;
-    if (j == 10)
+    if (j == 11)
         throw ServerBlock::BadConfig();
     typedef void(ServerBlock::*Parse)(std::string str, size_t n);
-    Parse word_parse[10] = {&ServerBlock::listen,
+    Parse word_parse[11] = {&ServerBlock::listen,
                      &ServerBlock::serverName, 
                      &ServerBlock::root, 
                      &ServerBlock::index, 
@@ -315,11 +316,28 @@ void ServerBlock::ParseTokens(std::string str, size_t n) throw (BadConfig)
                      &ServerBlock::closed_scope,
                      &ServerBlock::parse_autoindex,
                      &ServerBlock::parse_error_page,
-                     &ServerBlock::parse_redirect};
+                     &ServerBlock::parse_redirect,
+                     &ServerBlock::parse_cgi};
     (this->*word_parse[j])(str, n);
 }
 
-
+void ServerBlock::parse_cgi(std::string str, size_t n) throw (BadConfig){
+      if (this->servers[n].type_index[CGI] == true)
+        throw ServerBlock::BadConfig();
+    std::string word;
+    word = "cgi_pass";
+    size_t i = word.length() + 1;
+    while (str[i] == ' ' || str[i] == '\t')
+        i++;
+    word = "";
+    while (i < str.length()){
+        word += str[i];
+        i++;
+    }
+    this->servers[n].cgi_pass = word;
+    this->servers[n].type_index[CGI] = true;
+    std::cout << "**************" << this->servers[n].redir << std::endl;
+}
 
 void ServerBlock::ServerCount() throw (BadConfig)
 {

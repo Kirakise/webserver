@@ -14,7 +14,7 @@
 
         ServerConf(ServerBlock *p) : _port(80), host("127.0.0.1"), _autoindex(false), clientBodySize(-1), loc_number(0), parent(p){
             size_t i = 0;
-            while (i < 9){
+            while (i < 10){
                 this->type_index[i] = false;
                 i++;
             }
@@ -46,12 +46,13 @@
         size_t loc_number;
         std::unordered_map <int, std::string> error_page;
         std::string redir;
+        std::string cgi_pass;
         ServerBlock *parent;
     
         uint16_t getPort() { return _port; }
         std::string getHost() { return host; }
 
-        bool type_index[9];
+        bool type_index[10];
     };
 
     #endif

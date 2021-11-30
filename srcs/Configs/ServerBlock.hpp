@@ -19,6 +19,7 @@
 # define ENDSCOPE 6
 # define AUTOINDEX 7
 # define REDIR 8
+# define CGI 9
 
 class ServerConf;
 
@@ -55,6 +56,7 @@ class ServerBlock
     void parse_autoindex(std::string str, size_t n) throw (BadConfig);
     void parse_error_page(std::string str, size_t n) throw (BadConfig);
     void parse_redirect(std::string str, size_t n) throw (BadConfig);
+    void parse_cgi(std::string str, size_t n) throw (BadConfig);
 
 
     std::vector < ServerConf > servers;

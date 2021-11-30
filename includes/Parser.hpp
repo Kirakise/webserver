@@ -22,7 +22,8 @@ class Parser{
         std::string                                        method;
         std::string                                        version;
         std::string                                        path;
-        std::vector<std::pair<std::string, std::list<std::string> > > headers;
+        // std::vector<std::pair<std::string, std::list<std::string> > > headers;
+        std::map<std::string, std::string>                 _headers;
         std::string                                        body;
         bool                                               bad_responce;
         
@@ -47,5 +48,7 @@ class Parser{
         std::list<std::string> splitLine(const char *str, const char * sep);
         void find_index();
         void find_host_port();
+        std::string getMethod(){return method;};
+        std::string getPath(){return path;};
 
 };

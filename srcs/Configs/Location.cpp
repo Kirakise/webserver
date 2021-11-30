@@ -97,6 +97,7 @@ void Location::parse_autoindex(std::string str){
         throw ServerBlock::BadConfig();
 }
 
+
 void Location::parse_index(std::string str){
     size_t i = 0;
     while ((str[i] == ' ' || str[i] == '\t') && i < str.length())

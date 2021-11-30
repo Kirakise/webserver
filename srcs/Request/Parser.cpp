@@ -103,7 +103,7 @@ void Parser::parseHeaders(){
     std::string key;
     std::string afterkey;
     std::list <std::string> value;
-    std::pair<std::string, std::list<std::string> > p1;
+    std::pair<std::string, std::string> p1;
     while (n < this->lines.size()){ 
         found = this->lines[n].find(":");
         if (found == std::string::npos)
@@ -113,9 +113,8 @@ void Parser::parseHeaders(){
         }
         key = this->lines[n].substr(0, found);
         afterkey = this->lines[n].substr(found+1);
-        value = splitLine(afterkey.c_str(), ", ");
-        p1 = std::make_pair(key, value);
-        this->headers.push_back(p1);
+        p1 = std::make_pair(key, afterkey);
+        this->_headers.insert(p1);
         n++;
     }
     // printVector(this->headers);

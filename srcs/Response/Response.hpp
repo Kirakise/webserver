@@ -21,6 +21,8 @@ class Response{
     Parser pars;
     ServerConf Conf;
 
+    std::string body;
+
     Response(Parser p, ServerConf Conf) : pars(p), Conf(Conf) {}
     void Execute();
     void GET();
