@@ -16,4 +16,5 @@ class Cgi {
 
     void make_env();
     void env_to_array();
+    void startCgi();
 };
