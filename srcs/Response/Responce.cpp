@@ -170,6 +170,14 @@ void Response::GET()
     else
     {
         if (isDirectory(pars.path)){
+            if (Conf.default_folder_page.size() > 0)
+            {
+                pars.path = Conf.default_folder_page;
+                Content_type = getType(pars.path);
+                code = 200;
+                Content = readFile(pars.path);
+                return ;
+            }
             code = 200;
             Content_type = "text/html";
             Content = getListingResponse(pars.path);
