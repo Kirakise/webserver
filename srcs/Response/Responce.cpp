@@ -153,15 +153,23 @@ void Response::GET()
     if (Conf.redir != "") { code = 307; return ; }
     if (!isAllowed("GET", Conf.allowedMethods)) { code = 405; return ;}
     if (!checkIfExists(pars.path)) { code = 404; return ; }
-    if (isDirectory(pars.path)){
-        code = 200;
-        Content_type = "text/html";
-        Content = getListingResponse(pars.path);
+    if (Conf._cgi.size() != 0)
+    {
+        Cgi c(*this);
+        c.startCgi();
     }
-    else{
-        Content = readFile(pars.path);
-        code = 200;
-        Content_type = getType(pars.path);
+    else
+    {
+        if (isDirectory(pars.path)){
+            code = 200;
+            Content_type = "text/html";
+            Content = getListingResponse(pars.path);
+        }
+        else{
+            Content = readFile(pars.path);
+            code = 200;
+            Content_type = getType(pars.path);
+        }
     }
 }
 

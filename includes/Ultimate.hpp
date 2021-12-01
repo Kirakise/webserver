@@ -7,3 +7,4 @@
 #include "../srcs/Server/Server.hpp"
 #include "../srcs/Configs/ServerBlock.hpp"
 #include "../srcs/Configs/Location.hpp"
+#include "../srcs/Cgi/Cgi.hpp"
