@@ -182,7 +182,7 @@ void Server::doRecv(uint64_t socket)
         _requests[socket].find("Transfer-Encoding: chunked") < _requests[socket].find("\r\n\r\n"))
         this->getAllChunks(socket);
     
-    if (_requests[socket].find("Content-Type: multipart/form-data; boundary="))
+    if (_requests[socket].find("Content-Type: multipart/form-data; boundary=") != std::string::npos)
         this->parseMultipart(socket);
     
     if (_requests[socket] != "")
