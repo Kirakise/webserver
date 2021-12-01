@@ -135,6 +135,7 @@ void Location::parse_default_page(std::string str){
         i++;
     }
     this->default_folder_page = word == "" ? this->default_folder_page : word;
+    std::cout << this->default_folder_page << std::endl;
 }
 
 void Location::ParseTokens(std::string str){
