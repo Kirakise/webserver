@@ -10,6 +10,11 @@ Parser::Parser(std::string request, ServerBlock sv) : request(request), bad_resp
     this->parseStartLine();
     this->parseHeaders();
     this->find_index();
+    std::cout << request << std::endl;
+    for (std::map<std::string, std::string>::iterator i = this->_headers.begin(); i != this->_headers.end(); i++)
+    {
+        std::cout << "---" << i->first << "---" << i->second << std::endl;
+    }
 }
 
 Parser::~Parser(){}
