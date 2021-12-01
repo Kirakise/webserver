@@ -46,12 +46,6 @@ std::string getPath(std::string path)
     return path.substr(0, i);
 }
 
-std::string getFile(std::string path)
-{
-    int i = path.size() - 1;
-    while (path[i] != '/');
-}
-
 std::string getFilePathInLoc(std::string path, std::string locpath)
 {
     int size = path.find(locpath) + locpath.size();
