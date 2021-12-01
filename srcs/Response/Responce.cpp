@@ -154,7 +154,7 @@ void Response::GET()
     if (Conf.redir != "") { code = 307; return ; }
     if (!isAllowed("GET", Conf.allowedMethods)) { code = 405; return ;}
     if (!checkIfExists(pars.path)) { code = 404; return ; }
-    if (Conf._cgi.size() != 0)
+    if (Conf.cgi_pass.size() != 0)
     {
         Cgi c(*this);
         c.startCgi();
