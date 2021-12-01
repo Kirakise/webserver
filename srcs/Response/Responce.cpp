@@ -65,6 +65,9 @@ std::string isIndexed(std::string &path, ServerConf &conf, Location *l = 0)
     if (l == 0) //Если мы не внутри location
         for (int i = 0; i < conf.locs.size(); i++)
         {
+            if (conf.locs[i].locations[0][0] == '*' && path.find(conf.locs[i].locations[0].substr(conf.locs[i].locations[0].find("*")))
+            && loc == -1)
+                loc = i;
             if (path.find(conf.locs[i].locations[0]) != std::string::npos &&
             (loc == -1 || conf.locs[i].locations[0].size() > conf.locs[loc].locations[0].size()))
                 loc = i;
@@ -72,6 +75,9 @@ std::string isIndexed(std::string &path, ServerConf &conf, Location *l = 0)
     else // Если мы смотрим другой локейшн
         for (int i = 0; i < l->locs.size(); i++)
         {
+            if (l->locs[i].locations[0][0] == '*' && path.find(l->locs[i].locations[0].substr(l->locs[i].locations[0].find("*")))
+            && loc == -1)
+                loc = i;
             if (path.find(l->locs[i].locations[0]) != std::string::npos &&
             (loc == -1 || l->locs[i].locations[0].size() > l->locs[loc].locations[0].size()))
                 loc = i;
@@ -102,6 +108,10 @@ std::string isIndexed(std::string &path, ServerConf &conf, Location *l = 0)
         else {
             if (l->autoindex) {
                 path = l->_root + getFilePathInLoc(path, l->locations[0]);
+                goto end;
+            }
+            else if (l->locations[0][0] == '*'){
+                path = l->_root.substr(0, l->_root.find("*")) + getFilePathInLoc(path, l->locations[0].substr(0, l->locations[0].find("*")));
                 goto end;
             }
             else
@@ -158,6 +168,10 @@ void Response::GET()
     {
         Cgi c(*this);
         c.startCgi();
+        Content = c.body;
+        Content_type = getType(pars.path);
+        code = 200;
+        return ;
     }
     else
     {
@@ -207,6 +221,15 @@ void Response::POST()
     if (!isAllowed("POST", Conf.allowedMethods)) { code = 405; return ;}
     //if ((pars.path = isIndexed(pars.path, Conf)) == "") { code = 403; return ; }
     if (Conf.clientBodySize != -1 && Conf.clientBodySize < pars.body.size()) { code = 413; return;}
+    if (Conf.cgi_pass.size() != 0)
+    {
+        Cgi c(*this);
+        c.startCgi();
+        Content = c.body;
+        Content_type = getType(pars.path);
+        code = 200;
+        return ;
+    }
     if (checkIfExists(pars.path))
     {
         f.open(pars.path, std::ofstream::app);
