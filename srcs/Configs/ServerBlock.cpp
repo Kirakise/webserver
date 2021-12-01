@@ -125,6 +125,24 @@ void ServerBlock::serverName(std::string str, size_t n)throw (BadConfig){
         
 }
 
+void ServerBlock::parse_default_page(std::string str, size_t n) throw (BadConfig){
+    if (this->servers[n].type_index[DEFAULT] == true)
+        throw ServerBlock::BadConfig();
+    std::string word;
+    word = "default_folder_page";
+    size_t i = word.length() + 1;
+    while (str[i] == ' ' || str[i] == '\t')
+        i++;
+    word = "";
+    while (i < str.length()){
+        word += str[i];
+        i++;
+    }
+    this->servers[n].default_folder_page = word;
+    this->servers[n].type_index[DEFAULT] = true;
+    std::cout << this->servers[n].default_folder_page << std::endl;
+}
+
 void ServerBlock::root(std::string str, size_t n)throw (BadConfig){
     if (this->servers[n].type_index[ROOT] == true)
         throw ServerBlock::BadConfig();
@@ -279,7 +297,7 @@ void ServerBlock::parse_error_page(std::string str, size_t n) throw (BadConfig){
 
 void ServerBlock::ParseTokens(std::string str, size_t n) throw (BadConfig)
 {
-    std::string types[11] = {"listen",
+    std::string types[12] = {"listen",
                         "server_name",
                         "root",
                         "index",
@@ -289,7 +307,8 @@ void ServerBlock::ParseTokens(std::string str, size_t n) throw (BadConfig)
                         "autoindex",
                         "error_page",
                         "redirect",
-                        "cgi_pass"};
+                        "cgi_pass",
+                        "default_folder_page"};
     size_t i = 0;
     size_t j = 0;
     std::string word;
@@ -302,12 +321,12 @@ void ServerBlock::ParseTokens(std::string str, size_t n) throw (BadConfig)
         word+=str[i];
         i++;
     }
-    while (word != types[j] && j < 11)
+    while (word != types[j] && j < 12)
         j++;
-    if (j == 11)
+    if (j == 12)
         throw ServerBlock::BadConfig();
     typedef void(ServerBlock::*Parse)(std::string str, size_t n);
-    Parse word_parse[11] = {&ServerBlock::listen,
+    Parse word_parse[12] = {&ServerBlock::listen,
                      &ServerBlock::serverName, 
                      &ServerBlock::root, 
                      &ServerBlock::index, 
@@ -317,7 +336,8 @@ void ServerBlock::ParseTokens(std::string str, size_t n) throw (BadConfig)
                      &ServerBlock::parse_autoindex,
                      &ServerBlock::parse_error_page,
                      &ServerBlock::parse_redirect,
-                     &ServerBlock::parse_cgi};
+                     &ServerBlock::parse_cgi,
+                     &ServerBlock::parse_default_page};
     (this->*word_parse[j])(str, n);
 }
 

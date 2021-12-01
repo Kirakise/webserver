@@ -120,8 +120,25 @@ void Location::parse_index(std::string str){
     }
 }
 
+void Location::parse_default_page(std::string str){
+    size_t i = 0;
+    while ((str[i] == ' ' || str[i] == '\t') && i < str.length())
+        i++;
+    std::string word;
+    word = "default_folder_page";
+    i += word.length() + 1;
+    while (str[i] == ' ' || str[i] == '\t')
+        i++;
+    word = "";
+    while (i < str.length()){
+        word += str[i];
+        i++;
+    }
+    this->default_folder_page = word == "" ? this->default_folder_page : word;
+}
+
 void Location::ParseTokens(std::string str){
-    std::string types[9] = {
+    std::string types[10] = {
                         "root",
                         // "index",
                         "allow_methods",
@@ -131,7 +148,8 @@ void Location::ParseTokens(std::string str){
                         "client_max_body_size",
                         "index",
                         "autoindex", 
-                        "redirect"};
+                        "redirect", 
+                        "default_folder_page"};
 
     size_t i = 0;
     size_t j = 0;
@@ -145,12 +163,12 @@ void Location::ParseTokens(std::string str){
         word+=str[i];
         i++;
     }
-    while (word != types[j] && j < 9)
+    while (word != types[j] && j < 10)
         j++;
-    if (j == 9)
+    if (j == 10)
         throw ServerBlock::BadConfig();
     typedef void(Location::*Parse)(std::string str);
-    Parse word_parse[9] = {&Location::root, 
+    Parse word_parse[10] = {&Location::root, 
                     //  &Location::index, 
                      &Location::allow_methods,
                      &Location::cgi_pass,
@@ -159,7 +177,8 @@ void Location::ParseTokens(std::string str){
                      &Location::client_body_bufsize,
                      &Location::parse_index,
                      &Location::parse_autoindex,
-                     &Location::parse_redirect};
+                     &Location::parse_redirect, 
+                     &Location::parse_default_page};
     std::cout << line_number << std::endl;
     (this->*word_parse[j])(str);
 }
