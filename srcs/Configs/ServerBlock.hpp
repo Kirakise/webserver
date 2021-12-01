@@ -59,6 +59,7 @@ class ServerBlock
     void parse_redirect(std::string str, size_t n) throw (BadConfig);
     void parse_cgi(std::string str, size_t n) throw (BadConfig);
     void parse_default_page(std::string str, size_t n) throw (BadConfig);
+    bool checkExists(std::string path);
 
 
     std::vector < ServerConf > servers;
