@@ -194,10 +194,15 @@ void Response::DELETE()
 void Response::POST()
 {
     std::ofstream f;
-    if (pars.path[pars.path.size() - 1] == '/' && 
-    pars._headers["Content-Disposition"].find("filename") != std::string::npos )
-    pars.path += pars._headers["Content-Disposition"].substr(pars._headers["Content-Disposition"].find("filename=") + 10);
     isIndexed(pars.path, Conf);
+    if (isDirectory(pars.path) && 
+    pars._headers["Content-Disposition"].find("filename") != std::string::npos )
+    {
+        if (pars.path[pars.path.size() - 1] != '/')
+            pars.path.append("/");
+        pars.path += pars._headers["Content-Disposition"].substr(pars._headers["Content-Disposition"].find("filename=") + 10);
+        pars.path.erase(pars.path.size() - 1);
+    }
     if (Conf.redir != "") { code = 307; return ; }
     if (!isAllowed("POST", Conf.allowedMethods)) { code = 405; return ;}
     //if ((pars.path = isIndexed(pars.path, Conf)) == "") { code = 403; return ; }
