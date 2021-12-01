@@ -169,7 +169,7 @@ void Server::parseMultipart(uint64_t socket)
     pos = _requests[socket].find(bound + "\r\n");
     body = _requests[socket].substr(pos + bound.size() + 2);
     pos = body.find("\r\n\r\n");
-    headers += body.substr(0, pos);
+    headers += body.substr(0, pos + 2);
     body = body.substr(pos + 4);
     pos = body.find("\r\n" + bound + "--");
     body = body.substr(0, pos);
