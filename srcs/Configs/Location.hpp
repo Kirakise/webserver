@@ -21,7 +21,6 @@ class Location{
     std::vector < Location > locs;
     bool autoindex;
     std::string redir;
-    std::string default_folder_page;
 
 
 
@@ -45,7 +44,6 @@ class Location{
     void parse_index(std::string str);
     void parse_autoindex(std::string str);
     void parse_redirect(std::string str);
-    void parse_default_page(std::string str);
 
 };
 

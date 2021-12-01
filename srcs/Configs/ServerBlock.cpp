@@ -1,5 +1,6 @@
 
 #include "ServerBlock.hpp"
+#include <sys/stat.h>
 
 extern size_t line_number;
 
@@ -146,6 +147,10 @@ void ServerBlock::parse_default_page(std::string str, size_t n) throw (BadConfig
         word += str[i];
         i++;
     }
+     if (checkExists(word) == false){
+        std::cerr << word << ": file doesn't exist" << std::endl;
+        throw ServerBlock::BadConfig();
+    }
     this->servers[n].default_folder_page = word;
     this->servers[n].type_index[DEFAULT] = true;
     std::cout << this->servers[n].default_folder_page << std::endl;
@@ -258,7 +263,11 @@ void ServerBlock::parse_autoindex(std::string str, size_t n)throw (BadConfig){
     std::cout << this->servers[n]._root << std::endl;
 }
 
-
+bool ServerBlock::checkExists(std::string path)
+{
+    struct stat buffer;   
+    return (stat (path.c_str(), &buffer) == 0);
+}
 
 void ServerBlock::closed_scope(std::string str, size_t n)throw (BadConfig){
     this->servers[n].open_scope = false;
@@ -291,6 +300,10 @@ void ServerBlock::parse_error_page(std::string str, size_t n) throw (BadConfig){
         i++;
     }
     std::cout << "!!!!shdgfhsgdhsgdfhgdsfh " << word << std::endl;
+    if (checkExists(word) == false){
+        std::cerr << word << ": file doesn't exist" << std::endl;
+        throw ServerBlock::BadConfig();
+    }
     this->servers[n].error_page[k] = word;
 }
 
@@ -374,6 +387,10 @@ void ServerBlock::parse_cgi(std::string str, size_t n) throw (BadConfig){
     while (i < str.length()){
         word += str[i];
         i++;
+    }
+     if (checkExists(word) == false){
+        std::cerr << word << ": file doesn't exist" << std::endl;
+        throw ServerBlock::BadConfig();
     }
     this->servers[n].cgi_pass = word;
     this->servers[n].type_index[CGI] = true;
