@@ -72,14 +72,14 @@ void Cgi::startCgi(){
         write(1, "Status: 500\r\n\r\n", 16);
     }
     else{
-        char buf[10000] = {0};
+        char buf[10] = {0};
         waitpid(-1, NULL, 0);
         lseek(fdout, 0, SEEK_SET);
 
         ret = 1;
         while (ret > 0){
-            memset(buf, 0, 10000);
-            ret = read(fdout, buf, 10000);
+            memset(buf, 0, 10);
+            ret = read(fdout, buf, 10);
             res += buf;
         }
     }
@@ -95,7 +95,7 @@ void Cgi::startCgi(){
 
     for(size_t i = 0; env_ready[i]; i++)
         delete [] env_ready[i];
-    delete[] env_ready;
+    // delete[] env_ready;
 
     if (!pid)
         exit(0);
