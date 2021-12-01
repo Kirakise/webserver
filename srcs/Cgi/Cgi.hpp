@@ -1,4 +1,8 @@
-#include "../Response/Response.hpp"
+#ifndef CGI_HPP
+# define CGI_HPP
+
+#include "Ultimate.hpp"
+
 
 
 class Cgi {
@@ -18,3 +22,5 @@ class Cgi {
     void env_to_array();
     void startCgi();
 };
+
+#endif

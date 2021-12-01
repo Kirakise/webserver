@@ -4,6 +4,7 @@
 #include <sys/stat.h>
 #include <unordered_map>
 #include <cstdio>
+#include "../Cgi/Cgi.hpp"
 
 CodeToStr cts;
 

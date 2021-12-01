@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <unistd.h>
 
+
 Cgi::Cgi(Response res) : res(res), body(res.body), conf(res.Conf), req(res.pars), headers(res.pars._headers){}
 Cgi::~Cgi(){}
 

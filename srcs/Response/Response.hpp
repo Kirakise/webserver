@@ -3,6 +3,8 @@
 #include <string>
 #include <vector>
 #include "Ultimate.hpp"
+
+
 std::string readFile(std::string& filename);
 
 std::string getListingResponse(std::string path);
@@ -10,6 +12,7 @@ std::string getListingResponse(std::string path);
 std::string getMimeType(std::string path);
 
 int isDirectory(std::string path);
+
 
 class Response{
     public:

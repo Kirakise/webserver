@@ -36,6 +36,7 @@ void Parser::parseLines(){
     std::size_t found = this->splited_req.find("\r\n");
     std::size_t start = 0;
     std::string line;
+    std::cout << request << std::endl;
     std::string start_line;
     start_line = this->splited_req;
     while (found != std::string::npos)
