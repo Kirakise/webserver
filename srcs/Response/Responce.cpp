@@ -228,7 +228,7 @@ void Response::POST()
     {
         f.open(pars.path, std::ofstream::app);
         if (f.good()) {
-            code = 200;
+            code = 204;
             f << pars.body;
             f.close();
         }
@@ -239,13 +239,12 @@ void Response::POST()
     {
         f.open(pars.path);
         if (f.good()){
-            code = 200;
+            code = 204;
             f << pars.body;
             f.close();
         } else
             code = 403;
-    }
-
+    }   
 }
 
 
