@@ -95,7 +95,7 @@ void Cgi::startCgi(){
 
     for(size_t i = 0; env_ready[i]; i++)
         delete [] env_ready[i];
-    delete[] env_ready;
+    // delete[] env_ready;
 
     if (!pid)
         exit(0);
