@@ -6,21 +6,18 @@
 
 
 class Cgi {
-    public :
+public :
     Cgi(Response res);
     ~Cgi();
 
-    std::map<std::string, std::string> env;
-    char ** env_ready;
+    //std::map<std::string, std::string> env;
     Response res;
     std::string body;
     ServerConf conf;
     Parser req;
     std::map<std::string, std::string> headers;
 
-    void make_env();
-    void env_to_array();
-    void startCgi();
+    std::string startCgi();
 };
 
 #endif

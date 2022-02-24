@@ -59,7 +59,7 @@ std::string isIndexed(std::string &path, ServerConf &conf, Location *l = 0)
     if (l == 0) //Если мы не внутри location
         for (int i = 0; i < conf.locs.size(); i++)
         {
-            if (conf.locs[i].locations[0][0] == '*' && path.find(conf.locs[i].locations[0].substr(conf.locs[i].locations[0].find("*")))
+            if (conf.locs[i].locations[0][1] == '*' && path.find(conf.locs[i].locations[0].substr(conf.locs[i].locations[0].find("*")))
             && loc == -1)
                 loc = i;
             if (path.find(conf.locs[i].locations[0]) != std::string::npos &&
@@ -69,7 +69,7 @@ std::string isIndexed(std::string &path, ServerConf &conf, Location *l = 0)
     else // Если мы смотрим другой локейшн
         for (int i = 0; i < l->locs.size(); i++)
         {
-            if (l->locs[i].locations[0][0] == '*' && path.find(l->locs[i].locations[0].substr(l->locs[i].locations[0].find("*")))
+            if (l->locs[i].locations[0][1] == '*' && path.find(l->locs[i].locations[0].substr(l->locs[i].locations[0].find("*")))
             && loc == -1)
                 loc = i;
             if (path.find(l->locs[i].locations[0]) != std::string::npos &&
@@ -100,12 +100,12 @@ std::string isIndexed(std::string &path, ServerConf &conf, Location *l = 0)
             path = "";
         }
         else {
-            if (l->autoindex) {
-                path = l->_root + getFilePathInLoc(path, l->locations[0]);
+            if (l->locations[0][1] == '*'){
+                path = l->_root.substr(0, l->_root.find("*")) + getFilePathInLoc(path, l->locations[0].substr(0, l->locations[0].find("*")));
                 goto end;
             }
-            else if (l->locations[0][0] == '*'){
-                path = l->_root.substr(0, l->_root.find("*")) + getFilePathInLoc(path, l->locations[0].substr(0, l->locations[0].find("*")));
+            else if (l->autoindex) {
+                path = l->_root + getFilePathInLoc(path, l->locations[0]);
                 goto end;
             }
             else
@@ -122,6 +122,7 @@ std::string isIndexed(std::string &path, ServerConf &conf, Location *l = 0)
     end:
     if (l != 0){
         conf.allowedMethods = l->allowedMethods;
+        conf.cgi_pass = l->_cgi_pass;
         conf._cgi = l->_cgi_pass;
         conf.clientBodySize = l->clientBodyBufferSize;
         conf.redir = l->redir;
@@ -160,6 +161,7 @@ void Response::GET()
     if (!checkIfExists(pars.path)) { code = 404; return ; }
     if (Conf.cgi_pass.size() != 0)
     {
+        std::cout << "CGI STARTED" << std::endl;
         Cgi c(*this);
         c.startCgi();
         Content = c.body;
